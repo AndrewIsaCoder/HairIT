@@ -1,0 +1,17 @@
+{
+  "name": "hairit-backend",
+  "version": "1.0.0",
+  "description": "API REST pentru aplicatia de programari HairIT",
+  "type": "module",
+  "main": "src/server.js",
+  "engines": { "node": ">=22.5.0" },
+  "scripts": {
+    "start": "node --no-warnings=ExperimentalWarning src/server.js",
+    "dev": "node --no-warnings=ExperimentalWarning --watch src/server.js",
+    "seed": "node --no-warnings=ExperimentalWarning src/seed.js --reset"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  }
+}
