@@ -25,10 +25,10 @@ function validateReservation(body = {}) {
   const email = String(body.email ?? '').trim();
   const notes = String(body.notes ?? '').trim();
 
-  if (clientName.length < 3) errors.clientName = 'Numele trebuie sa aiba minim 3 caractere.';
+  if (clientName.length < 3) errors.clientName = 'Numele trebuie să aibă minim 3 caractere.';
   if (clientName.length > 60) errors.clientName = 'Numele este prea lung.';
-  if (!PHONE_PATTERN.test(phone)) errors.phone = 'Numarul de telefon nu este valid.';
-  if (email && !EMAIL_PATTERN.test(email)) errors.email = 'Adresa de email nu este valida.';
+  if (!PHONE_PATTERN.test(phone)) errors.phone = 'Numărul de telefon nu este valid.';
+  if (email && !EMAIL_PATTERN.test(email)) errors.email = 'Adresa de email nu este validă.';
   if (notes.length > 300) errors.notes = 'Mesajul poate avea maxim 300 de caractere.';
 
   return { errors, value: { clientName, phone, email, notes } };
@@ -58,7 +58,7 @@ api.get('/appointments', (req, res) => {
   const { date, status, serviceId } = req.query;
 
   if (date && !DATE_PATTERN.test(String(date))) {
-    return res.status(400).json({ message: 'Parametrul date trebuie sa fie de forma YYYY-MM-DD.' });
+    return res.status(400).json({ message: 'Parametrul date trebuie să fie de forma YYYY-MM-DD.' });
   }
   if (status && !['available', 'booked'].includes(String(status))) {
     return res.status(400).json({ message: "Parametrul status accepta doar 'available' sau 'booked'." });
@@ -69,7 +69,7 @@ api.get('/appointments', (req, res) => {
 
 api.get('/appointments/:id', (req, res) => {
   const appointment = getAppointment(req.params.id);
-  if (!appointment) return res.status(404).json({ message: 'Programarea nu a fost gasita.' });
+  if (!appointment) return res.status(404).json({ message: 'Programarea nu a fost găsită.' });
   res.json(appointment);
 });
 
@@ -77,13 +77,13 @@ api.post('/appointments', (req, res) => {
   const { date, time, serviceId, stylistId } = req.body ?? {};
 
   if (!DATE_PATTERN.test(String(date ?? ''))) {
-    return res.status(400).json({ message: 'Data trebuie sa fie de forma YYYY-MM-DD.' });
+    return res.status(400).json({ message: 'Data trebuie să fie de forma YYYY-MM-DD.' });
   }
   if (!TIME_PATTERN.test(String(time ?? ''))) {
-    return res.status(400).json({ message: 'Ora trebuie sa fie de forma HH:MM.' });
+    return res.status(400).json({ message: 'Ora trebuie să fie de forma HH:MM.' });
   }
   if (!serviceId || !stylistId) {
-    return res.status(400).json({ message: 'Serviciul si stilistul sunt obligatorii.' });
+    return res.status(400).json({ message: 'Serviciul și stilistul sunt obligatorii.' });
   }
 
   try {
@@ -101,10 +101,10 @@ api.post('/appointments/:id/reserve', (req, res) => {
 
   const result = reserveAppointment(req.params.id, value);
   if (result.error === 'not_found') {
-    return res.status(404).json({ message: 'Programarea nu a fost gasita.' });
+    return res.status(404).json({ message: 'Programarea nu a fost găsită.' });
   }
   if (result.error === 'already_booked') {
-    return res.status(409).json({ message: 'Programarea este deja rezervata.', appointment: result.appointment });
+    return res.status(409).json({ message: 'Programarea este deja rezervată.', appointment: result.appointment });
   }
 
   res.json(result.appointment);
@@ -113,10 +113,10 @@ api.post('/appointments/:id/reserve', (req, res) => {
 api.post('/appointments/:id/cancel', (req, res) => {
   const result = cancelAppointment(req.params.id);
   if (result.error === 'not_found') {
-    return res.status(404).json({ message: 'Programarea nu a fost gasita.' });
+    return res.status(404).json({ message: 'Programarea nu a fost găsită.' });
   }
   if (result.error === 'not_booked') {
-    return res.status(409).json({ message: 'Programarea este deja libera.', appointment: result.appointment });
+    return res.status(409).json({ message: 'Programarea este deja liberă.', appointment: result.appointment });
   }
 
   res.json(result.appointment);

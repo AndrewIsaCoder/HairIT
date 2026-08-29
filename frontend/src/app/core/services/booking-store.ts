@@ -114,7 +114,7 @@ export class BookingStore {
       next: (updated) => {
         this.replaceTerm(updated);
         this.selectedTerm.set(updated);
-        this.notice.set('Programare confirmata pentru ' + updated.clientName + ', la ora ' + updated.time + '.');
+        this.notice.set('Programare confirmată pentru ' + updated.clientName + ', la ora ' + updated.time + '.');
         this.reserving.set(false);
         this.refreshDays();
         this.refreshStats();
@@ -132,7 +132,7 @@ export class BookingStore {
       next: (updated) => {
         this.replaceTerm(updated);
         if (this.selectedTerm()?.id === updated.id) this.selectedTerm.set(updated);
-        this.notice.set('Rezervarea de la ora ' + updated.time + ' a fost anulata.');
+        this.notice.set('Rezervarea de la ora ' + updated.time + ' a fost anulată.');
         this.refreshDays();
         this.refreshStats();
       },
@@ -172,7 +172,7 @@ export class BookingStore {
     const body = err.error as ApiError | undefined;
     this.fieldErrors.set(body?.errors ?? {});
     this.error.set(
-      body?.message ?? 'Nu am putut contacta serverul. Verifica daca API-ul ruleaza pe portul 3100.'
+      body?.message ?? 'Nu am putut contacta serverul. Verifică dacă API-ul rulează pe portul 3100.'
     );
   }
 }

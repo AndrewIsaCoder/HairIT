@@ -22,11 +22,11 @@ export function createApp() {
     app.get(/^(?!\/api).*/, (req, res) => res.sendFile(join(frontendDist, 'index.html')));
   }
 
-  app.use((req, res) => res.status(404).json({ message: 'Ruta nu exista.' }));
+  app.use((req, res) => res.status(404).json({ message: 'Ruta nu există.' }));
 
   app.use((error, req, res, next) => {
     console.error('[hairit-api]', error);
-    res.status(500).json({ message: 'Eroare interna de server.' });
+    res.status(500).json({ message: 'Eroare internă de server.' });
   });
 
   return app;
