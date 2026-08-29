@@ -1,0 +1,33 @@
+# dependencies
+node_modules/
+.npm/
+
+# Angular build output
+frontend/dist/
+frontend/.angular/
+frontend/tmp/
+frontend/out-tsc/
+
+# backend runtime data
+backend/data/*.db
+backend/data/*.db-journal
+backend/data/*.db-wal
+backend/data/*.db-shm
+
+# environment
+.env
+.env.local
+
+# logs
+*.log
+npm-debug.log*
+
+# editors / OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# livrabil
+*.zip
