@@ -297,28 +297,37 @@ Interogările SQL sunt identice în ambele cazuri.
 
 ### Pașii de publicare
 
-1. **Creează baza pe Turso** (cont gratuit):
+1. **Importă proiectul în Vercel** ([vercel.com/new](https://vercel.com/new)). Nu modifica setările de
+   build — sunt luate din `vercel.json`.
+
+2. **Adaugă baza de date din Marketplace:** în proiect → *Storage* → *Turso Cloud* → creează baza și
+   conecteaz-o la proiect. Integrarea setează automat `TURSO_DATABASE_URL` și `TURSO_AUTH_TOKEN`
+   în variabilele de mediu, pentru toate mediile. Nu trebuie să cauți sau să copiezi tu token-ul.
+
+3. **Adu variabilele local**, ca să poți popula baza:
 
    ```bash
-   turso db create hairit
-   turso db show hairit --url
-   turso db tokens create hairit
+   npx vercel link
+   npx vercel env pull --environment=production .env
    ```
 
-2. **Populează baza o singură dată**, de pe calculatorul tău — copiază `.env.example` în `.env`,
-   completează cele două valori, apoi:
+4. **Populează baza o singură dată:**
 
    ```bash
    npm run seed:turso
    ```
 
-3. **Importă proiectul în Vercel** și adaugă în *Settings → Environment Variables*:
-   `TURSO_DATABASE_URL` și `TURSO_AUTH_TOKEN` (pentru Production și Preview).
-
-4. **Deploy.** Vercel folosește comenzile din `vercel.json`, deci nu trebuie să configurezi nimic
-   în interfață. Frontendul apelează `/api`, aceeași origine, deci nu există probleme de CORS.
+5. **Redeploy** din panoul Vercel (*Deployments* → ultimul deploy → *Redeploy*), ca funcția să
+   pornească având variabilele setate. Frontendul apelează `/api` pe aceeași origine, deci nu există
+   probleme de CORS.
 
 Pentru a reface datele demo pe baza publicată, rulează din nou `npm run seed:turso`.
+
+> Dacă preferi să creezi baza direct la Turso, în afara Vercel, ai nevoie de CLI-ul lor
+> (`turso db create hairit`, `turso db show hairit --url`, `turso db tokens create hairit`).
+> Atenție: pe Windows CLI-ul rulează doar prin WSL, de aceea traseul recomandat mai sus este
+> integrarea din Vercel. Variabilele obținute astfel se pun manual în `.env` și în
+> *Settings → Environment Variables*.
 
 ---
 
