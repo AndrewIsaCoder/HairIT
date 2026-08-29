@@ -1,11 +1,22 @@
 # HairIT — aplicație full stack de programări pentru salon
 
+![Angular](https://img.shields.io/badge/Angular-21-DD0031?logo=angular&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-24-5FA04E?logo=nodedotjs&logoColor=white)
+![Express](https://img.shields.io/badge/Express-4-000000?logo=express&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-node:sqlite-003B57?logo=sqlite&logoColor=white)
+![Fără dependențe UI](https://img.shields.io/badge/CSS-scris%20de%20m%C3%A2n%C4%83-b15f2c)
+
 Aplicație web pentru rezervarea programărilor într-un salon de coafură și îngrijire.
 Frontend-ul este scris în **Angular 21**, iar backend-ul este un **API REST Express + SQLite**.
 Interfața folosește un sistem de design propriu: paletă caldă, tipografia *Onest*, grid adaptiv în `rem`,
 ecran de intrare animat și un efect de dezvăluire a imaginii sub cursor în hero.
 
 ![Pagina principală HairIT](docs/screenshots/02-hero.png)
+
+> **Pe scurt:** calendar pe 12 zile → alegi un interval liber (verde) → completezi formularul →
+> statusul trece în `booked` și lista, calendarul și statisticile se actualizează instant.
+> Build de producție: **80,8 kB** transferați, fără niciun framework CSS.
 
 ---
 
