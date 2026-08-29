@@ -1,0 +1,17 @@
+<div class="loader__content">
+  <p class="loader__brand">
+    <hairit-icon name="spark" class="loader__spark" />
+    HairIT
+  </p>
+  <p class="loader__tagline">Programări fără efort. Rezultate impecabile.</p>
+</div>
+
+<div class="loader__progress">
+  <div class="loader__track">
+    <div class="loader__fill" [style.width.%]="progress()"></div>
+  </div>
+  <div class="loader__meta">
+    <span>Se încarcă</span>
+    <span class="loader__counter">{{ label }}</span>
+  </div>
+</div>

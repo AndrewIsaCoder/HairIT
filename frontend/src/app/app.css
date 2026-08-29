@@ -1,0 +1,15 @@
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
+  z-index: 130;
+  border-radius: var(--radius-control);
+  background: var(--ink);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  color: #fff;
+  transform: translateY(-200%);
+  transition: transform 0.25s ease;
+}
+
+.skip-link:focus-visible { transform: none; }
