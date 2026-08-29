@@ -2,7 +2,7 @@ import { createApp } from './app.js';
 import { createSchema } from './lib/db.js';
 import { seed } from './seed.js';
 
-const PORT = Number(process.env.PORT ?? 3000);
+const PORT = Number(process.env.PORT ?? 3100);
 
 createSchema();
 const result = seed();

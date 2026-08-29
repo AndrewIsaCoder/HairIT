@@ -1,12 +1,12 @@
 import { db, createSchema } from './lib/db.js';
 
 const SERVICES = [
-  { slug: 'tuns-styling',      name: 'Tuns & Styling',            category: 'Par',      durationMin: 60,  price: 150, description: 'Consultanta, tuns personalizat si styling final cu produse premium.' },
-  { slug: 'coafat-eveniment',  name: 'Coafat de Eveniment',       category: 'Par',      durationMin: 90,  price: 240, description: 'Coafuri elaborate pentru nunti, botezuri si sesiuni foto.' },
-  { slug: 'vopsit-balayage',   name: 'Vopsit & Balayage',         category: 'Culoare',  durationMin: 180, price: 480, description: 'Tehnica de balayage cu tranzitii naturale si toner personalizat.' },
-  { slug: 'tratament-keratina',name: 'Tratament cu Keratina',     category: 'Ingrijire',durationMin: 120, price: 350, description: 'Indreptare si reconstructie a fibrei capilare, efect de pana la 4 luni.' },
-  { slug: 'manichiura',        name: 'Manichiura Semipermanenta', category: 'Unghii',   durationMin: 90,  price: 130, description: 'Manichiura completa cu oja semipermanenta si intarire.' },
-  { slug: 'tratament-facial',  name: 'Tratament Facial',          category: 'Ten',      durationMin: 60,  price: 220, description: 'Curatare profunda, exfoliere si masca hidratanta adaptata tenului.' }
+  { slug: 'tuns-styling',       name: 'Tuns & Styling',            category: 'Păr',       durationMin: 60,  price: 150, description: 'Consultație, tuns personalizat și styling final cu produse premium.' },
+  { slug: 'coafat-eveniment',   name: 'Coafat de Eveniment',       category: 'Păr',       durationMin: 90,  price: 240, description: 'Coafuri elaborate pentru nunți, botezuri și ședințe foto.' },
+  { slug: 'vopsit-balayage',    name: 'Vopsit & Balayage',         category: 'Culoare',   durationMin: 180, price: 480, description: 'Tehnică de balayage cu tranziții naturale și toner personalizat.' },
+  { slug: 'tratament-keratina', name: 'Tratament cu Keratină',     category: 'Îngrijire', durationMin: 120, price: 350, description: 'Îndreptare și reconstrucție a fibrei capilare, efect de până la 4 luni.' },
+  { slug: 'manichiura',         name: 'Manichiură Semipermanentă', category: 'Unghii',    durationMin: 90,  price: 130, description: 'Manichiură completă cu ojă semipermanentă și întărirea unghiei.' },
+  { slug: 'tratament-facial',   name: 'Tratament Facial',          category: 'Ten',       durationMin: 60,  price: 220, description: 'Curățare profundă, exfoliere și mască hidratantă adaptată tenului.' }
 ];
 
 const STYLISTS = [

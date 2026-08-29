@@ -172,7 +172,7 @@ export class BookingStore {
     const body = err.error as ApiError | undefined;
     this.fieldErrors.set(body?.errors ?? {});
     this.error.set(
-      body?.message ?? 'Nu am putut contacta serverul. Verifica daca API-ul ruleaza pe portul 3000.'
+      body?.message ?? 'Nu am putut contacta serverul. Verifica daca API-ul ruleaza pe portul 3100.'
     );
   }
 }

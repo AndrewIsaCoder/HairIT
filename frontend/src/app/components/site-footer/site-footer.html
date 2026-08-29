@@ -1,0 +1,43 @@
+<div class="shell footer__inner">
+  <div class="footer__cta" hairitReveal>
+    <h2 class="footer__title">Ai nevoie de o schimbare?<br />Hai să vorbim.</h2>
+    <button type="button" class="pill pill--light pill--arrow pill--up" (click)="ui.openModal()">
+      Cere o programare
+      <span class="pill__badge"><hairit-icon name="arrow-up-right" /></span>
+    </button>
+  </div>
+
+  <div class="footer__columns">
+    <div class="footer__brand" hairitReveal>
+      <p class="footer__logo">
+        <hairit-icon name="spark" />
+        HairIT
+      </p>
+      <p class="footer__tagline">
+        Salon independent de coafură și îngrijire, cu programări online și o echipă mică,
+        atentă la detalii.
+      </p>
+    </div>
+
+    <div class="footer__column" *ngFor="let column of columns; let i = index" [hairitReveal]="i * 80">
+      <p class="footer__column-title">{{ column.title }}</p>
+      <ul>
+        <li *ngFor="let link of column.links">
+          <a *ngIf="link.href" [href]="link.href" rel="noopener" target="_blank">{{ link.label }}</a>
+          <button *ngIf="link.target" type="button" (click)="ui.goTo(link.target!)">{{ link.label }}</button>
+          <span *ngIf="!link.href && !link.target">{{ link.label }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer__legal">
+    <span>© {{ year }} HairIT Salon. Toate drepturile rezervate.</span>
+    <span class="footer__legal-links">
+      <a href="#confidentialitate">Confidențialitate</a>
+      <a href="#termeni">Termeni</a>
+    </span>
+  </div>
+</div>
+
+<p class="footer__watermark watermark" aria-hidden="true">HAIRIT</p>

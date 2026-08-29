@@ -5,6 +5,12 @@ import { SiteHeader } from './components/site-header/site-header';
 import { NavMenu } from './components/nav-menu/nav-menu';
 import { HeroSection } from './components/hero-section/hero-section';
 import { BookingSection } from './components/booking-section/booking-section';
+import { ServicesSection } from './components/services-section/services-section';
+import { StudioSection } from './components/studio-section/studio-section';
+import { TeamSection } from './components/team-section/team-section';
+import { StatsSection } from './components/stats-section/stats-section';
+import { SiteFooter } from './components/site-footer/site-footer';
+import { RequestModal } from './components/request-modal/request-modal';
 import { BookingStore } from './core/services/booking-store';
 import { SmoothScroll } from './core/services/smooth-scroll';
 import { UiState } from './core/services/ui-state';
@@ -12,7 +18,20 @@ import { UiState } from './core/services/ui-state';
 /** Componenta radacina: orchestreaza ecranul de incarcare, meniul si sectiunile paginii. */
 @Component({
   selector: 'app-root',
-  imports: [NgIf, PageLoader, SiteHeader, NavMenu, HeroSection, BookingSection],
+  imports: [
+    NgIf,
+    PageLoader,
+    SiteHeader,
+    NavMenu,
+    HeroSection,
+    ServicesSection,
+    BookingSection,
+    StudioSection,
+    TeamSection,
+    StatsSection,
+    SiteFooter,
+    RequestModal
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './app.html',
   styleUrl: './app.css'

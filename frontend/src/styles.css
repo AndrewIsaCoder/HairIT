@@ -269,6 +269,12 @@ input, textarea, select { font: inherit; }
   .reveal { opacity: 1; transform: none; }
 }
 
+/* sectiunile nu trebuie sa ajunga sub header-ul fix */
+main > *,
+footer {
+  scroll-margin-top: 5.5rem;
+}
+
 /* blocheaza scroll-ul cand este deschis un overlay */
 html.is-locked,
 body.is-locked {

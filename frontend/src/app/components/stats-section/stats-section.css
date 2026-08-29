@@ -1,0 +1,56 @@
+:host {
+  display: block;
+  background: var(--bg);
+  padding-bottom: 5rem;
+}
+
+.stats {
+  border-radius: var(--radius-card);
+  background: var(--ink);
+  padding: 3rem 1.5rem;
+  color: #fff;
+}
+
+.stats__title {
+  margin-top: 1rem;
+  max-width: 20ch;
+  font-size: 1.875rem;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+.stats__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 2rem;
+  row-gap: 2.5rem;
+  margin-top: 3rem;
+}
+
+.stats__value {
+  display: block;
+  font-size: 3rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.stats__label {
+  display: block;
+  margin-top: 0.6rem;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+@media (min-width: 641px) {
+  .stats { padding: 4rem 2rem; }
+  .stats__value { font-size: 3.75rem; }
+}
+
+@media (min-width: 1025px) {
+  :host { padding-bottom: 7rem; }
+  .stats { padding-inline: 4rem; }
+  .stats__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 3.5rem; }
+  .stats__title { font-size: 2.25rem; }
+}

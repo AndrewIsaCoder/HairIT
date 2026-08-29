@@ -1,0 +1,13 @@
+<div class="shell">
+  <div class="stats" #panel hairitReveal>
+    <p class="eyebrow eyebrow--light">În cifre</p>
+    <h2 class="stats__title">Dovada stă în agenda salonului, nu în promisiuni.</h2>
+
+    <ul class="stats__grid">
+      <li *ngFor="let card of cards(); let i = index" [hairitReveal]="i * 90">
+        <span class="stats__value">{{ values()[i] }}{{ card.suffix }}</span>
+        <span class="stats__label">{{ card.label }}</span>
+      </li>
+    </ul>
+  </div>
+</div>
