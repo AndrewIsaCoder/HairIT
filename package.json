@@ -4,14 +4,23 @@
   "private": true,
   "description": "Aplicatie full stack de programari pentru salonul HairIT",
   "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
-    "setup": "npm --prefix backend install && npm --prefix frontend install",
-    "api": "npm --prefix backend run dev",
+    "setup": "npm install && npm --prefix frontend install",
+    "api": "node --no-warnings=ExperimentalWarning --watch backend/src/server.js",
     "web": "npm --prefix frontend run start",
     "build": "npm --prefix frontend run build",
-    "seed": "npm --prefix backend run seed",
+    "seed": "node --no-warnings=ExperimentalWarning backend/src/seed.js --reset",
+    "seed:turso": "node --env-file=.env --no-warnings=ExperimentalWarning backend/src/seed.js --reset",
     "screenshots": "node tools/screenshots.mjs",
     "livrabil": "node tools/package-zip.mjs"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.15.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
   },
   "devDependencies": {
     "puppeteer-core": "^24.10.0"

@@ -16,7 +16,8 @@ export function createApp() {
 
   app.use('/api', api);
 
-  // in productie servim si build-ul Angular din acelasi proces
+  // local putem servi si build-ul Angular din acelasi proces;
+  // pe Vercel fisierele statice sunt livrate de CDN, nu de functie
   if (existsSync(frontendDist)) {
     app.use(express.static(frontendDist));
     app.get(/^(?!\/api).*/, (req, res) => res.sendFile(join(frontendDist, 'index.html')));

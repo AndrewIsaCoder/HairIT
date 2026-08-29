@@ -31,6 +31,7 @@ ecran de intrare animat și un efect de dezvăluire a imaginii sub cursor în he
 - [Sistemul de design](#sistemul-de-design)
 - [Cerințele temei și unde sunt implementate](#cerințele-temei-și-unde-sunt-implementate)
 - [Scripturi disponibile](#scripturi-disponibile)
+- [Publicare pe Vercel](#publicare-pe-vercel)
 
 ---
 
@@ -91,7 +92,8 @@ plus backend-ul și frontend-ul pornite).
 | Zonă | Tehnologii |
 | --- | --- |
 | Frontend | Angular 21 (componente standalone, signals, zoneless), TypeScript 5.9, CSS pur, Lenis |
-| Backend | Node.js 24, Express 4, `node:sqlite` (SQLite integrat în Node) |
+| Backend | Node.js 24, Express 4, `node:sqlite` local și `@libsql/client` (Turso) în producție |
+| Găzduire | Vercel — frontend static + API ca funcție serverless |
 | Unelte | Angular CLI, Puppeteer (capturi de ecran), PowerShell / zip (arhiva de predare) |
 
 Nu există dependențe de UI kit-uri sau framework-uri CSS: tot sistemul de design este scris de mână.
@@ -134,6 +136,8 @@ HairIT/
 │       │   └── request-modal/  formularul de contact
 │       ├── app.ts / app.html   componenta rădăcină
 │       └── styles.css          sistemul de design global
+├── api/index.js                punctul de intrare pentru funcția serverless de pe Vercel
+├── vercel.json                 comenzile de build și rutarea /api către funcție
 ├── docs/screenshots/           capturile din acest README
 └── tools/                      generarea capturilor și arhiva de predare
 ```
@@ -166,7 +170,8 @@ npm run web
 - API: <http://localhost:3100/api>
 
 Baza de date SQLite se creează și se populează automat la prima pornire a serverului,
-în `backend/data/hairit.db`. Pentru a regenera datele de test:
+în `backend/data/hairit.db`. Nu ai nevoie de niciun cont sau variabilă de mediu pentru dezvoltare.
+Pentru a regenera datele de test:
 
 ```bash
 npm run seed
@@ -264,13 +269,56 @@ Coduri de eroare folosite: `400` parametri invalizi, `404` programare inexistent
 
 | Comandă | Efect |
 | --- | --- |
-| `npm run setup` | instalează dependențele pentru backend și frontend |
+| `npm run setup` | instalează dependențele (rădăcină + frontend) |
 | `npm run api` | pornește API-ul pe portul 3100, cu reîncărcare la salvare |
 | `npm run web` | pornește aplicația Angular pe portul 4200 |
 | `npm run build` | build de producție pentru frontend |
-| `npm run seed` | regenerează datele de test |
+| `npm run seed` | regenerează datele de test în baza locală |
+| `npm run seed:turso` | regenerează datele în baza Turso, citind `.env` |
 | `npm run screenshots` | regenerează capturile din `docs/screenshots` |
 | `npm run livrabil` | creează arhiva `andrei_stoian_assignment06.zip` pentru predare |
+
+---
+
+## Publicare pe Vercel
+
+Aplicația rulează pe Vercel ca un singur proiect: frontendul Angular este livrat static de CDN,
+iar API-ul Express devine o funcție serverless (`api/index.js`), conform `vercel.json`.
+
+Funcțiile serverless au filesystem read-only, deci în producție baza de date nu poate sta pe disc.
+Stratul de acces la date alege singur driverul:
+
+| Mediu | Driver | Unde stau datele |
+| --- | --- | --- |
+| local (fără variabile de mediu) | `node:sqlite` | `backend/data/hairit.db` |
+| producție (`TURSO_DATABASE_URL` setat) | `@libsql/client/web` | [Turso](https://turso.tech) — SQLite găzduit |
+
+Interogările SQL sunt identice în ambele cazuri.
+
+### Pașii de publicare
+
+1. **Creează baza pe Turso** (cont gratuit):
+
+   ```bash
+   turso db create hairit
+   turso db show hairit --url
+   turso db tokens create hairit
+   ```
+
+2. **Populează baza o singură dată**, de pe calculatorul tău — copiază `.env.example` în `.env`,
+   completează cele două valori, apoi:
+
+   ```bash
+   npm run seed:turso
+   ```
+
+3. **Importă proiectul în Vercel** și adaugă în *Settings → Environment Variables*:
+   `TURSO_DATABASE_URL` și `TURSO_AUTH_TOKEN` (pentru Production și Preview).
+
+4. **Deploy.** Vercel folosește comenzile din `vercel.json`, deci nu trebuie să configurezi nimic
+   în interfață. Frontendul apelează `/api`, aceeași origine, deci nu există probleme de CORS.
+
+Pentru a reface datele demo pe baza publicată, rulează din nou `npm run seed:turso`.
 
 ---
 

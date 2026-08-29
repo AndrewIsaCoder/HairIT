@@ -1,4 +1,4 @@
-import { db, createSchema } from './lib/db.js';
+import { createSchema, getDb, isRemote } from './lib/db.js';
 
 const SERVICES = [
   { slug: 'tuns-styling',       name: 'Tuns & Styling',            category: 'Păr',       durationMin: 60,  price: 150, description: 'Consultație, tuns personalizat și styling final cu produse premium.' },
@@ -16,14 +16,14 @@ const STYLISTS = [
 ];
 
 const CLIENTS = [
-  { clientName: 'Ana Petrescu',    phone: '+40760123456' },
-  { clientName: 'Maria Ionescu',   phone: '+40721445890' },
-  { clientName: 'Diana Constantin',phone: '+40733901224' },
-  { clientName: 'Raluca Neagu',    phone: '+40745120987' },
-  { clientName: 'Cristina Vlad',   phone: '+40766334512' },
-  { clientName: 'Alexandra Toma',  phone: '+40711876340' },
-  { clientName: 'Bianca Radu',     phone: '+40799652108' },
-  { clientName: 'Sorina Enache',   phone: '+40755410273' }
+  { clientName: 'Ana Petrescu',     phone: '+40760123456' },
+  { clientName: 'Maria Ionescu',    phone: '+40721445890' },
+  { clientName: 'Diana Constantin', phone: '+40733901224' },
+  { clientName: 'Raluca Neagu',     phone: '+40745120987' },
+  { clientName: 'Cristina Vlad',    phone: '+40766334512' },
+  { clientName: 'Alexandra Toma',   phone: '+40711876340' },
+  { clientName: 'Bianca Radu',      phone: '+40799652108' },
+  { clientName: 'Sorina Enache',    phone: '+40755410273' }
 ];
 
 const HOURS = ['09:00', '10:30', '12:00', '13:30', '15:00', '16:30', '18:00'];
@@ -45,42 +45,45 @@ function isoDate(offsetDays) {
   return d.toISOString().slice(0, 10);
 }
 
-function reset() {
-  db.exec('DELETE FROM appointments; DELETE FROM services; DELETE FROM stylists;');
-  db.exec("DELETE FROM sqlite_sequence WHERE name IN ('appointments', 'services', 'stylists')");
+async function reset(db) {
+  await db.script(`
+    DELETE FROM appointments;
+    DELETE FROM services;
+    DELETE FROM stylists;
+    DELETE FROM sqlite_sequence WHERE name IN ('appointments', 'services', 'stylists');
+  `);
 }
 
-export function seed({ force = false } = {}) {
-  createSchema();
+export async function seed({ force = false } = {}) {
+  await createSchema();
+  const db = await getDb();
 
-  const existing = db.prepare('SELECT COUNT(*) AS n FROM appointments').get().n;
-  if (existing > 0 && !force) {
-    return { skipped: true, appointments: existing };
+  const existing = await db.get('SELECT COUNT(*) AS n FROM appointments');
+  if (existing.n > 0 && !force) {
+    return { skipped: true, appointments: existing.n };
   }
-  reset();
 
-  const insertService = db.prepare(
-    'INSERT INTO services (slug, name, description, category, duration_min, price) VALUES (?, ?, ?, ?, ?, ?)'
+  await reset(db);
+
+  await db.batch(
+    SERVICES.map((s) => ({
+      sql: 'INSERT INTO services (slug, name, description, category, duration_min, price) VALUES (?, ?, ?, ?, ?, ?)',
+      args: [s.slug, s.name, s.description, s.category, s.durationMin, s.price]
+    }))
   );
-  for (const s of SERVICES) {
-    insertService.run(s.slug, s.name, s.description, s.category, s.durationMin, s.price);
-  }
 
-  const insertStylist = db.prepare('INSERT INTO stylists (name, role, initials) VALUES (?, ?, ?)');
-  for (const s of STYLISTS) {
-    insertStylist.run(s.name, s.role, s.initials);
-  }
-
-  const serviceIds = db.prepare('SELECT id FROM services ORDER BY id').all().map((r) => r.id);
-  const stylistIds = db.prepare('SELECT id FROM stylists ORDER BY id').all().map((r) => r.id);
-
-  const insertAppointment = db.prepare(
-    `INSERT INTO appointments (date, time, service_id, stylist_id, status, client_name, phone, email)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+  await db.batch(
+    STYLISTS.map((s) => ({
+      sql: 'INSERT INTO stylists (name, role, initials) VALUES (?, ?, ?)',
+      args: [s.name, s.role, s.initials]
+    }))
   );
+
+  const serviceIds = (await db.all('SELECT id FROM services ORDER BY id')).map((r) => r.id);
+  const stylistIds = (await db.all('SELECT id FROM stylists ORDER BY id')).map((r) => r.id);
 
   const random = makeRandom(20260510);
-  let created = 0;
+  const rows = [];
 
   for (let offset = 0; offset < DAYS_AHEAD; offset += 1) {
     const date = isoDate(offset);
@@ -97,28 +100,41 @@ export function seed({ force = false } = {}) {
         const booked = random() < 0.38;
         const client = CLIENTS[Math.floor(random() * CLIENTS.length)];
 
-        insertAppointment.run(
-          date,
-          time,
-          serviceId,
-          stylistId,
-          booked ? 'booked' : 'available',
-          booked ? client.clientName : '',
-          booked ? client.phone : '',
-          booked ? `${client.clientName.split(' ')[0].toLowerCase()}@example.com` : ''
-        );
-        created += 1;
+        rows.push({
+          sql: `INSERT INTO appointments (date, time, service_id, stylist_id, status, client_name, phone, email)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          args: [
+            date,
+            time,
+            serviceId,
+            stylistId,
+            booked ? 'booked' : 'available',
+            booked ? client.clientName : '',
+            booked ? client.phone : '',
+            booked ? `${client.clientName.split(' ')[0].toLowerCase()}@example.com` : ''
+          ]
+        });
       }
     }
   }
 
-  return { skipped: false, appointments: created, services: SERVICES.length, stylists: STYLISTS.length };
+  // pe Turso trimitem in transe, ca sa nu depasim limita unei cereri
+  const chunkSize = 100;
+  for (let i = 0; i < rows.length; i += chunkSize) {
+    await db.batch(rows.slice(i, i + chunkSize));
+  }
+
+  return { skipped: false, appointments: rows.length, services: SERVICES.length, stylists: STYLISTS.length };
 }
 
 // rulare directa: `npm run seed`
 if (process.argv[1] && process.argv[1].includes('seed.js')) {
-  const result = seed({ force: process.argv.includes('--reset') });
-  console.log(result.skipped
-    ? `Baza de date contine deja ${result.appointments} programari. Foloseste --reset pentru regenerare.`
-    : `Am generat ${result.appointments} programari, ${result.services} servicii si ${result.stylists} stilisti.`);
+  const result = await seed({ force: process.argv.includes('--reset') });
+  const target = isRemote ? 'Turso' : 'baza locala';
+
+  console.log(
+    result.skipped
+      ? `${target}: exista deja ${result.appointments} programari. Foloseste --reset pentru regenerare.`
+      : `${target}: am generat ${result.appointments} programari, ${result.services} servicii si ${result.stylists} stilisti.`
+  );
 }
