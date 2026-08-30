@@ -51,10 +51,15 @@ Toată interfața este scrisă de mână în CSS, fără framework de UI.
 
 ### Pentru saloane
 
+- **îți adaugi salonul singur**, din formularul cu previzualizare live: nume, categorie, oraș, adresă,
+  contact și fotografia de copertă; contul devine automat de tip proprietar;
 - **panou propriu** cu cifrele salonului: rezervări viitoare, intervale libere, grad de ocupare, încasări estimate;
 - **agenda zilei** pe fiecare specialist, cu datele de contact ale clientului și mențiunile lăsate de acesta;
 - **anularea unei rezervări** din partea salonului, care trimite automat notificare clientului;
-- **gestionarea serviciilor**: adăugare, listare și ștergere, cu durată, preț și categorie;
+- **gestionarea serviciilor și a echipei**: adăugare, listare și ștergere, cu durată, preț și categorie;
+- **program de lucru** editabil pe fiecare zi a săptămânii, cu zile marcate ca închise;
+- **generarea intervalelor** din agendă pornind de la program și de la specialiști, cu pas configurabil;
+  rularea repetată nu creează duplicate, iar rezervările existente rămân neatinse;
 - un cont poate administra **mai multe saloane**, comutabile din același panou.
 
 ### Platformă
@@ -107,6 +112,10 @@ Pagina de autentificare are butoane care completează singure conturile demo.
 | --- | --- |
 | ![Cifrele salonului](docs/screenshots/11-panou-salon.png) | ![Agenda pe specialiști](docs/screenshots/12-agenda.png) |
 
+| Adaugă-ți salonul | Generarea intervalelor |
+| --- | --- |
+| ![Formularul de salon nou](docs/screenshots/16-salon-nou.png) | ![Generarea intervalelor](docs/screenshots/17-intervale.png) |
+
 | Mobil — acasă | Mobil — căutare |
 | --- | --- |
 | ![Varianta mobilă](docs/screenshots/14-mobil.png) | ![Căutare pe mobil](docs/screenshots/15-mobil-cautare.png) |
@@ -158,7 +167,7 @@ HairIT/
 │       │                           auth-shell, reveal, liquid-reveal
 │       ├── layout/                 page-loader, site-header, nav-menu, site-footer
 │       ├── pages/                  home, salons, salon, login, register,
-│       │                           account, owner, not-found
+│       │                           account, new-salon, owner, not-found
 │       ├── app.routes.ts           rutele si garzile
 │       └── styles.css              sistemul de design global
 ├── api/index.js                    functia serverless de pe Vercel
@@ -272,11 +281,18 @@ Toate rutele sunt sub prefixul `/api`. Rutele marcate cu 🔒 cer sesiune activ�
 
 | Metodă | Rută | Descriere |
 | --- | --- | --- |
+| `POST` | `/owner/salons` 🔒 | adaugă un salon nou; contul devine proprietar (nu cere rolul dinainte) |
 | `GET` | `/owner/salons` | saloanele administrate |
-| `GET` | `/owner/salons/:id` | detalii, servicii, echipă și statistici |
+| `GET` | `/owner/salons/:id` | detalii, servicii, echipă, program și statistici |
+| `PATCH` | `/owner/salons/:id` | actualizează datele salonului |
+| `PUT` | `/owner/salons/:id/hours` | salvează programul de lucru (șapte zile) |
 | `GET` | `/owner/salons/:id/agenda` | agenda unei zile, plus zilele disponibile |
+| `POST` | `/owner/salons/:id/slots` | generează intervalele libere (`days`, `stepMin`) |
+| `DELETE` | `/owner/salons/:id/slots` | șterge intervalele libere din viitor |
 | `POST` | `/owner/salons/:id/services` | adaugă un serviciu |
 | `PATCH` / `DELETE` | `/owner/services/:id` | modifică sau șterge un serviciu |
+| `POST` | `/owner/salons/:id/staff` | adaugă un specialist |
+| `DELETE` | `/owner/staff/:id` | șterge un specialist |
 
 Coduri de eroare: `400` parametri invalizi, `401` neautentificat, `403` fără drepturi,
 `404` inexistent, `409` conflict (interval deja rezervat, email deja folosit), `422` date de formular invalide.

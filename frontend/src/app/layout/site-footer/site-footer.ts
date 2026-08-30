@@ -34,7 +34,7 @@ export class SiteFooter {
     {
       title: 'Pentru saloane',
       links: [
-        { label: 'Înscrie-ți salonul', path: '/inregistrare' },
+        { label: 'Înscrie-ți salonul', path: '/salon-nou' },
         { label: 'Panoul salonului', path: '/salonul-meu' },
         { label: 'Cum funcționează', path: '/' }
       ]

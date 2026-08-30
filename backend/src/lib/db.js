@@ -15,8 +15,12 @@ import { SCHEMA } from './schema.js';
 const here = dirname(fileURLToPath(import.meta.url));
 const dataDir = join(here, '..', '..', 'data');
 
-const TURSO_URL = process.env.TURSO_DATABASE_URL;
-const TURSO_TOKEN = process.env.TURSO_AUTH_TOKEN;
+const TURSO_URL =
+  process.env.TURSO_DATABASE_URL ||
+  process.env.TURSO_DATABASE_UR_TURSO_DATABASE_URL;
+const TURSO_TOKEN =
+  process.env.TURSO_AUTH_TOKEN ||
+  process.env.TURSO_DATABASE_UR_TURSO_AUTH_TOKEN;
 
 export const isRemote = Boolean(TURSO_URL);
 

@@ -8,10 +8,15 @@
       </p>
     </div>
 
-    <a class="pill pill--outline pill--arrow" *ngIf="store.current() as salon" [routerLink]="['/salon', salon.slug]">
-      Vezi pagina publică
-      <span class="pill__badge"><hairit-icon name="arrow-up-right" /></span>
-    </a>
+    <div class="owner__head-actions">
+      <a class="pill pill--outline" *ngIf="store.current() as salon" [routerLink]="['/salon', salon.slug]">
+        Vezi pagina publică
+      </a>
+      <a class="pill pill--dark pill--arrow" routerLink="/salon-nou">
+        Salon nou
+        <span class="pill__badge"><hairit-icon name="plus" /></span>
+      </a>
+    </div>
   </header>
 
   <nav class="owner__salons" *ngIf="store.salons().length > 1">
@@ -29,8 +34,13 @@
     *ngIf="!store.loading() && store.salons().length === 0"
     icon="scissors"
     title="Nu ai încă un salon"
-    text="Contul tău este marcat ca proprietar, dar niciun salon nu îți este atribuit."
-  />
+    text="Adaugă-ți salonul în catalog, apoi completează serviciile, echipa și intervalele din agendă."
+  >
+    <a class="pill pill--dark pill--arrow" routerLink="/salon-nou">
+      Adaugă-ți salonul
+      <span class="pill__badge"><hairit-icon name="arrow-right" /></span>
+    </a>
+  </hairit-empty-state>
 
   <p class="form__success" *ngIf="store.message()">{{ store.message() }}</p>
   <p class="form__error" *ngIf="store.error()">{{ store.error() }}</p>
@@ -56,8 +66,19 @@
       </li>
     </ul>
 
+    <nav class="owner__tabs">
+      <button
+        type="button"
+        *ngFor="let item of tabs"
+        [ngClass]="{ 'is-active': tab() === item.id }"
+        (click)="tab.set(item.id)"
+      >
+        {{ item.label }}
+      </button>
+    </nav>
+
     <!-- ----------------------------------------------------------- agenda -->
-    <section class="block">
+    <section class="block" *ngIf="tab() === 'agenda'">
       <header class="block__head">
         <div>
           <h2 class="block__title">Agenda zilei</h2>
@@ -74,7 +95,7 @@
         </div>
       </header>
 
-      <div class="days">
+      <div class="days" *ngIf="store.days().length > 0">
         <button
           type="button"
           class="day"
@@ -116,24 +137,21 @@
             <span class="agenda__client agenda__client--free">Interval liber</span>
           </ng-template>
 
-          <button
-            type="button"
-            class="agenda__cancel"
-            *ngIf="slot.status === 'booked'"
-            (click)="cancel(slot)"
-          >
+          <button type="button" class="agenda__cancel" *ngIf="slot.status === 'booked'" (click)="cancel(slot)">
             Anulează
           </button>
         </li>
       </ul>
 
       <ng-template #emptyAgenda>
-        <p class="block__empty">Nu există intervale pentru ziua selectată.</p>
+        <p class="block__empty">
+          Nu există intervale pentru ziua selectată. Generează-le din secțiunea <strong>Intervale</strong>.
+        </p>
       </ng-template>
     </section>
 
     <!-- --------------------------------------------------------- servicii -->
-    <section class="block">
+    <section class="block" *ngIf="tab() === 'servicii'">
       <header class="block__head">
         <div>
           <h2 class="block__title">Servicii</h2>
@@ -146,7 +164,7 @@
         </button>
       </header>
 
-      <form class="service-form" *ngIf="showServiceForm()" [formGroup]="serviceForm" (ngSubmit)="addService()" novalidate>
+      <form class="inline-form" *ngIf="showServiceForm()" [formGroup]="serviceForm" (ngSubmit)="addService()" novalidate>
         <label class="field">
           <span class="field__label">Denumire</span>
           <input type="text" formControlName="name" placeholder="Tuns & Styling" />
@@ -167,46 +185,195 @@
           <input type="number" formControlName="price" min="0" />
         </label>
 
-        <label class="field service-form__wide">
+        <label class="field inline-form__wide">
           <span class="field__label">Descriere</span>
           <input type="text" formControlName="description" placeholder="Ce include serviciul" />
         </label>
 
-        <button type="submit" class="pill pill--dark service-form__submit" [disabled]="store.pending()">
+        <button type="submit" class="pill pill--dark inline-form__submit" [disabled]="store.pending()">
           {{ store.pending() ? 'Se salvează…' : 'Salvează serviciul' }}
         </button>
       </form>
 
-      <ul class="services">
+      <ul class="rows" *ngIf="salon.services.length > 0; else noServices">
         <li *ngFor="let service of salon.services">
-          <span class="services__name">
+          <span class="rows__name">
             {{ service.name }}
             <em>{{ service.category }} · {{ service.durationMin }} min</em>
           </span>
-          <span class="services__price">{{ money(service.price) }}</span>
-          <button type="button" class="services__remove" (click)="removeService(service.id)" aria-label="Șterge serviciul">
+          <span class="rows__price">{{ money(service.price) }}</span>
+          <button type="button" class="rows__remove" (click)="removeService(service.id)" aria-label="Șterge serviciul">
             <hairit-icon name="trash" />
           </button>
         </li>
       </ul>
+
+      <ng-template #noServices>
+        <p class="block__empty">Nu ai niciun serviciu. Adaugă primul ca să poți genera intervale.</p>
+      </ng-template>
     </section>
 
-    <!-- --------------------------------------------------------- echipa -->
-    <section class="block">
+    <!-- ------------------------------------------------------------ echipa -->
+    <section class="block" *ngIf="tab() === 'echipa'">
       <header class="block__head">
         <div>
           <h2 class="block__title">Echipa</h2>
-          <p class="block__text">Specialiștii care apar pe pagina publică.</p>
+          <p class="block__text">Specialiștii care apar pe pagina publică și în agendă.</p>
         </div>
       </header>
 
-      <ul class="team">
+      <form class="inline-form" [formGroup]="staffForm" (ngSubmit)="addStaff()" novalidate>
+        <label class="field inline-form__wide">
+          <span class="field__label">Nume</span>
+          <input type="text" formControlName="name" placeholder="Ana Petrescu" />
+        </label>
+
+        <label class="field inline-form__wide">
+          <span class="field__label">Rol</span>
+          <input type="text" formControlName="role" placeholder="Hair stylist" />
+        </label>
+
+        <button type="submit" class="pill pill--dark inline-form__submit" [disabled]="store.pending()">
+          <hairit-icon name="plus" />
+          Adaugă specialist
+        </button>
+      </form>
+
+      <ul class="rows" *ngIf="salon.staff.length > 0; else noStaff">
         <li *ngFor="let member of salon.staff">
-          <span class="team__avatar"><hairit-avatar [initials]="member.initials" [accent]="true" /></span>
-          <span class="team__name">{{ member.name }}</span>
-          <span class="team__role">{{ member.role }}</span>
+          <span class="rows__avatar"><hairit-avatar [initials]="member.initials" [accent]="true" /></span>
+          <span class="rows__name">
+            {{ member.name }}
+            <em>{{ member.role }}</em>
+          </span>
+          <button type="button" class="rows__remove" (click)="removeStaff(member.id)" aria-label="Șterge specialistul">
+            <hairit-icon name="trash" />
+          </button>
         </li>
       </ul>
+
+      <ng-template #noStaff>
+        <p class="block__empty">Nu ai niciun specialist. Fără cel puțin unul nu se pot genera intervale.</p>
+      </ng-template>
+    </section>
+
+    <!-- --------------------------------------------------------- intervale -->
+    <section class="block" *ngIf="tab() === 'intervale'">
+      <header class="block__head">
+        <div>
+          <h2 class="block__title">Intervale în agendă</h2>
+          <p class="block__text">
+            Intervalele se creează din programul de lucru, pentru fiecare specialist. Rulează oricând:
+            cele existente nu se dublează.
+          </p>
+        </div>
+      </header>
+
+      <form class="inline-form" [formGroup]="slotsForm" (ngSubmit)="generate()" novalidate>
+        <label class="field">
+          <span class="field__label">Pentru următoarele zile</span>
+          <input type="number" formControlName="days" min="1" max="60" />
+        </label>
+
+        <label class="field">
+          <span class="field__label">La fiecare (minute)</span>
+          <input type="number" formControlName="stepMin" min="15" max="240" step="15" />
+        </label>
+
+        <button type="submit" class="pill pill--dark inline-form__submit" [disabled]="store.pending()">
+          {{ store.pending() ? 'Se generează…' : 'Generează intervale' }}
+        </button>
+      </form>
+
+      <div class="danger">
+        <div>
+          <p class="danger__title">Șterge intervalele libere</p>
+          <p class="danger__text">
+            Rezervările existente rămân neatinse. Folosește-l când schimbi programul și vrei să
+            regenerezi agenda.
+          </p>
+        </div>
+        <button type="button" class="pill pill--outline" (click)="clearSlots()">Șterge intervalele libere</button>
+      </div>
+    </section>
+
+    <!-- ----------------------------------------------------------- setari -->
+    <section class="block" *ngIf="tab() === 'setari'">
+      <div class="settings">
+        <div class="panel-card">
+          <h2 class="block__title">Datele salonului</h2>
+
+          <form class="form settings__form" [formGroup]="salonForm" (ngSubmit)="saveSalon()" novalidate>
+            <label class="field">
+              <span class="field__label">Nume</span>
+              <input type="text" formControlName="name" />
+            </label>
+
+            <label class="field">
+              <span class="field__label">Categorie</span>
+              <select formControlName="category">
+                <option *ngFor="let item of categories" [value]="item">{{ item }}</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span class="field__label">Oraș</span>
+              <input type="text" formControlName="city" />
+            </label>
+
+            <label class="field">
+              <span class="field__label">Adresă</span>
+              <input type="text" formControlName="address" />
+            </label>
+
+            <label class="field">
+              <span class="field__label">Descriere scurtă</span>
+              <input type="text" formControlName="tagline" />
+            </label>
+
+            <label class="field">
+              <span class="field__label">Telefon</span>
+              <input type="tel" formControlName="phone" />
+            </label>
+
+            <label class="field">
+              <span class="field__label">Email</span>
+              <input type="email" formControlName="email" />
+            </label>
+
+            <label class="field">
+              <span class="field__label">Despre salon</span>
+              <textarea rows="4" formControlName="description"></textarea>
+            </label>
+
+            <button type="submit" class="pill pill--dark" [disabled]="store.pending()">Salvează datele</button>
+          </form>
+        </div>
+
+        <div class="panel-card">
+          <h2 class="block__title">Program de lucru</h2>
+          <p class="block__text">Intervalele generate respectă orele de mai jos.</p>
+
+          <ul class="hours">
+            <li *ngFor="let hour of hours()" [class.is-closed]="hour.closed">
+              <span class="hours__day">{{ weekdays[hour.weekday] }}</span>
+
+              <label class="hours__toggle">
+                <input type="checkbox" [checked]="!hour.closed" (change)="toggleClosed(hour.weekday, $event)" />
+                <span>{{ hour.closed ? 'Închis' : 'Deschis' }}</span>
+              </label>
+
+              <span class="hours__times" *ngIf="!hour.closed">
+                <input type="time" [value]="hour.opens" (change)="onHourInput(hour.weekday, 'opens', $event)" />
+                <em>–</em>
+                <input type="time" [value]="hour.closes" (change)="onHourInput(hour.weekday, 'closes', $event)" />
+              </span>
+            </li>
+          </ul>
+
+          <button type="button" class="pill pill--dark hours__save" (click)="saveHours()">Salvează programul</button>
+        </div>
+      </div>
     </section>
   </ng-container>
 </section>

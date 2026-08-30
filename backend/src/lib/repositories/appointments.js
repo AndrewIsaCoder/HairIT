@@ -259,3 +259,85 @@ export async function platformStats() {
   `);
   return row;
 }
+
+/* ------------------------------------------------------ generare intervale */
+
+/** Transforma "09:00" in numarul de minute de la miezul noptii. */
+function toMinutes(time) {
+  const [hour, minute] = String(time).split(':').map(Number);
+  return hour * 60 + minute;
+}
+
+function toTime(minutes) {
+  const hour = Math.floor(minutes / 60);
+  const minute = minutes % 60;
+  return String(hour).padStart(2, '0') + ':' + String(minute).padStart(2, '0');
+}
+
+/**
+ * Creeaza intervalele libere ale unui salon pentru urmatoarele zile,
+ * pornind de la programul de lucru si de la specialistii inregistrati.
+ * Intervalele existente nu sunt atinse, datorita cheii unice pe (salon, specialist, zi, ora).
+ */
+export async function generateSlots(salonId, { days = 14, stepMin = 90, serviceId = null } = {}) {
+  const db = await getDb();
+  const id = Number(salonId);
+
+  const [hours, staff, services] = await Promise.all([
+    db.all('SELECT weekday, opens, closes, closed FROM salon_hours WHERE salon_id = ?', [id]),
+    db.all('SELECT id FROM staff WHERE salon_id = ? AND active = 1 ORDER BY id', [id]),
+    db.all('SELECT id FROM services WHERE salon_id = ? ORDER BY id', [id])
+  ]);
+
+  if (staff.length === 0) return { created: 0, reason: 'no_staff' };
+  if (services.length === 0) return { created: 0, reason: 'no_services' };
+
+  const byWeekday = new Map(hours.map((hour) => [hour.weekday, hour]));
+  const before = await db.get('SELECT COUNT(*) AS n FROM appointments WHERE salon_id = ?', [id]);
+
+  const rows = [];
+  let cycle = 0;
+
+  for (let offset = 0; offset < days; offset += 1) {
+    const date = new Date();
+    date.setHours(12, 0, 0, 0);
+    date.setDate(date.getDate() + offset);
+
+    const iso = date.toISOString().slice(0, 10);
+    const program = byWeekday.get(date.getDay());
+    if (!program || program.closed) continue;
+
+    const start = toMinutes(program.opens);
+    const end = toMinutes(program.closes);
+
+    for (const member of staff) {
+      for (let minute = start; minute + stepMin <= end; minute += stepMin) {
+        const service = serviceId ? Number(serviceId) : services[cycle % services.length].id;
+        cycle += 1;
+
+        rows.push({
+          sql: `INSERT OR IGNORE INTO appointments (salon_id, staff_id, service_id, date, time, status)
+                VALUES (?, ?, ?, ?, ?, 'available')`,
+          args: [id, member.id, service, iso, toTime(minute)]
+        });
+      }
+    }
+  }
+
+  const chunkSize = 100;
+  for (let i = 0; i < rows.length; i += chunkSize) {
+    await db.batch(rows.slice(i, i + chunkSize));
+  }
+
+  const after = await db.get('SELECT COUNT(*) AS n FROM appointments WHERE salon_id = ?', [id]);
+  return { created: after.n - before.n, total: after.n };
+}
+
+/** Sterge intervalele libere din viitor; cele rezervate raman neatinse. */
+export async function clearFreeSlots(salonId) {
+  const db = await getDb();
+  await db.run(
+    "DELETE FROM appointments WHERE salon_id = ? AND status = 'available' AND date >= date('now')",
+    [Number(salonId)]
+  );
+}

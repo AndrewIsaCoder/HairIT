@@ -33,6 +33,12 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/account/account-page').then((m) => m.AccountPage)
   },
   {
+    path: 'salon-nou',
+    title: 'Adaugă-ți salonul — HairIT',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/new-salon/new-salon-page').then((m) => m.NewSalonPage)
+  },
+  {
     path: 'salonul-meu',
     title: 'Salonul meu — HairIT',
     canActivate: [ownerGuard],

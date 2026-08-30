@@ -185,3 +185,141 @@ export async function serviceSalonId(id) {
   const row = await db.get('SELECT salon_id AS salonId FROM services WHERE id = ?', [Number(id)]);
   return row?.salonId ?? null;
 }
+
+/* --------------------------------------------------------------- saloane */
+
+/** Transforma un nume in slug: "Salonul Meu" -> "salonul-meu". */
+export function slugify(value) {
+  return String(value)
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60);
+}
+
+/** Gaseste un slug liber, adaugand un sufix numeric daca este nevoie. */
+export async function uniqueSlug(base) {
+  const db = await getDb();
+  const root = slugify(base) || 'salon';
+
+  for (let attempt = 0; attempt < 50; attempt += 1) {
+    const candidate = attempt === 0 ? root : `${root}-${attempt + 1}`;
+    const taken = await db.get('SELECT 1 AS ok FROM salons WHERE slug = ?', [candidate]);
+    if (!taken) return candidate;
+  }
+
+  return `${root}-${Date.now()}`;
+}
+
+/** Programul implicit: luni-vineri 09:00-19:30, sambata pana la 16:00, duminica inchis. */
+const DEFAULT_HOURS = Array.from({ length: 7 }, (_, weekday) => ({
+  weekday,
+  opens: '09:00',
+  closes: weekday === 6 ? '16:00' : '19:30',
+  closed: weekday === 0 ? 1 : 0
+}));
+
+export async function createSalon(ownerId, salon) {
+  const db = await getDb();
+  const slug = await uniqueSlug(salon.name);
+
+  const created = await db.get(
+    `INSERT INTO salons (slug, name, tagline, description, category, city, address, phone, email, cover_image, owner_id)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     RETURNING id, slug`,
+    [
+      slug,
+      salon.name,
+      salon.tagline ?? '',
+      salon.description ?? '',
+      salon.category ?? 'Salon de coafură',
+      salon.city,
+      salon.address ?? '',
+      salon.phone ?? '',
+      salon.email ?? '',
+      salon.coverImage || 'images/studio-interior.jpg',
+      Number(ownerId)
+    ]
+  );
+
+  await db.batch(
+    DEFAULT_HOURS.map((hour) => ({
+      sql: 'INSERT INTO salon_hours (salon_id, weekday, opens, closes, closed) VALUES (?, ?, ?, ?, ?)',
+      args: [created.id, hour.weekday, hour.opens, hour.closes, hour.closed]
+    }))
+  );
+
+  return created;
+}
+
+export async function updateSalon(id, salon) {
+  const db = await getDb();
+  await db.run(
+    `UPDATE salons
+     SET name = ?, tagline = ?, description = ?, category = ?, city = ?, address = ?, phone = ?, email = ?, cover_image = ?
+     WHERE id = ?`,
+    [
+      salon.name,
+      salon.tagline ?? '',
+      salon.description ?? '',
+      salon.category ?? 'Salon de coafură',
+      salon.city,
+      salon.address ?? '',
+      salon.phone ?? '',
+      salon.email ?? '',
+      salon.coverImage || 'images/studio-interior.jpg',
+      Number(id)
+    ]
+  );
+
+  return getSalonById(id);
+}
+
+/** Inlocuieste programul de lucru al salonului. */
+export async function setHours(salonId, hours) {
+  const db = await getDb();
+  await db.run('DELETE FROM salon_hours WHERE salon_id = ?', [Number(salonId)]);
+  await db.batch(
+    hours.map((hour) => ({
+      sql: 'INSERT INTO salon_hours (salon_id, weekday, opens, closes, closed) VALUES (?, ?, ?, ?, ?)',
+      args: [Number(salonId), Number(hour.weekday), hour.opens, hour.closes, hour.closed ? 1 : 0]
+    }))
+  );
+
+  return listHours(salonId);
+}
+
+/* ----------------------------------------------------------- specialisti */
+
+export async function createStaff(salonId, { name, role, initials }) {
+  const db = await getDb();
+  return db.get(
+    `INSERT INTO staff (salon_id, name, role, initials)
+     VALUES (?, ?, ?, ?)
+     RETURNING id, salon_id AS salonId, name, role, initials, active`,
+    [Number(salonId), name, role || 'Stilist', initials || autoInitials(name)]
+  );
+}
+
+export async function deleteStaff(id) {
+  const db = await getDb();
+  await db.run('DELETE FROM staff WHERE id = ?', [Number(id)]);
+}
+
+export async function staffSalonId(id) {
+  const db = await getDb();
+  const row = await db.get('SELECT salon_id AS salonId FROM staff WHERE id = ?', [Number(id)]);
+  return row?.salonId ?? null;
+}
+
+/** "Ana Petrescu" -> "AP" */
+export function autoInitials(name) {
+  return String(name)
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? '')
+    .join('');
+}

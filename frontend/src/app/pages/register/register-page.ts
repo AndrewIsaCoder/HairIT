@@ -42,7 +42,7 @@ export class RegisterPage {
     this.auth.register({ ...this.form.getRawValue(), role: this.role() }).subscribe({
       next: () => {
         this.account.refresh();
-        this.router.navigate([this.role() === 'owner' ? '/salonul-meu' : '/contul-meu']);
+        this.router.navigate([this.role() === 'owner' ? '/salon-nou' : '/contul-meu']);
       },
       error: () => undefined
     });

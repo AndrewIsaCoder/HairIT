@@ -233,9 +233,9 @@
 
 .agenda__cancel:hover { background: var(--busy-soft); }
 
-/* ------------------------------------------------------------- servicii */
+/* ------------------------------------------------- formulare si liste */
 
-.service-form {
+.inline-form {
   display: grid;
   grid-template-columns: 1fr;
   gap: 0.75rem;
@@ -246,15 +246,15 @@
   padding: 1.25rem;
 }
 
-.service-form__submit { justify-self: start; }
+.inline-form__submit { justify-self: start; }
 
-.services {
+.rows {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.services li {
+.rows li {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -264,7 +264,9 @@
   padding: 0.85rem 1.1rem;
 }
 
-.services__name {
+.rows__avatar { display: block; width: 2.25rem; height: 2.25rem; flex: 0 0 auto; }
+
+.rows__name {
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -272,27 +274,149 @@
   font-weight: 500;
 }
 
-.services__name em {
+.rows__name em {
   font-style: normal;
   font-size: 0.72rem;
   font-weight: 400;
   color: rgba(17, 17, 17, 0.5);
 }
 
-.services__price { font-size: 0.9rem; font-weight: 600; color: var(--accent); }
+.rows__price { font-size: 0.9rem; font-weight: 600; color: var(--accent); }
 
-.services__remove {
+.rows__remove {
   display: grid;
   place-items: center;
   width: 2.1rem;
   height: 2.1rem;
+  flex: 0 0 auto;
   border-radius: var(--radius-pill);
   background: var(--surface);
   color: rgba(17, 17, 17, 0.5);
   transition: background 0.25s ease, color 0.25s ease;
 }
 
-.services__remove:hover { background: var(--busy-soft); color: var(--busy); }
+.rows__remove:hover { background: var(--busy-soft); color: var(--busy); }
+
+/* --------------------------------------------------------- zona de risc */
+
+.danger {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  border: 1px solid var(--busy-line);
+  border-radius: var(--radius-card-sm);
+  background: var(--busy-soft);
+  padding: 1.25rem;
+}
+
+.danger__title { font-size: 0.9rem; font-weight: 600; color: var(--busy); }
+
+.danger__text {
+  margin-top: 0.2rem;
+  max-width: 46ch;
+  font-size: 0.8rem;
+  color: rgba(17, 17, 17, 0.6);
+}
+
+/* ---------------------------------------------------------------- setari */
+
+.settings {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.settings__form { margin-top: 1rem; }
+
+.hours {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.hours li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: 1px solid var(--line);
+  padding: 0.65rem 0;
+}
+
+.hours__day {
+  min-width: 6rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.hours li.is-closed .hours__day { color: rgba(17, 17, 17, 0.45); }
+
+.hours__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: rgba(17, 17, 17, 0.6);
+  cursor: pointer;
+}
+
+.hours__toggle input { accent-color: var(--accent); }
+
+.hours__times {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: auto;
+}
+
+.hours__times input {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  padding: 0.35rem 0.6rem;
+  font-size: 0.8rem;
+  outline: none;
+}
+
+.hours__times input:focus { border-color: rgba(17, 17, 17, 0.3); background: #fff; }
+.hours__times em { font-style: normal; color: rgba(17, 17, 17, 0.35); }
+
+.hours__save { margin-top: 1.25rem; }
+
+/* ------------------------------------------------------------- taburi */
+
+.owner__tabs {
+  display: flex;
+  gap: 0.35rem;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.owner__tabs button {
+  flex: 0 0 auto;
+  border-radius: var(--radius-pill);
+  padding: 0.55rem 1.1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(17, 17, 17, 0.6);
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+.owner__tabs button:hover { background: var(--surface); color: var(--fg); }
+.owner__tabs button.is-active { background: var(--ink); color: #fff; }
+
+.owner__head-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
 
 /* --------------------------------------------------------------- echipa */
 
@@ -319,8 +443,12 @@
 
 @media (min-width: 641px) {
   .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .service-form { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .service-form__wide { grid-column: span 4; }
+  .inline-form { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .inline-form__wide { grid-column: span 2; }
   .team { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .agenda li { grid-template-columns: 4rem 10rem 1fr 1fr auto; }
+}
+
+@media (min-width: 1025px) {
+  .settings { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

@@ -2,7 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Api } from './api';
-import { ApiError, Appointment, DaySummary, OwnerSalon, SalonCard, SalonService } from '../models';
+import { ApiError, Appointment, DaySummary, OpeningHours, OwnerSalon, SalonCard, SalonDraft, SalonService, StaffMember } from '../models';
 
 export interface NewService {
   name: string;
@@ -64,6 +64,117 @@ export class OwnerStore {
         },
         error: (err: HttpErrorResponse) => this.fail(err)
       });
+  }
+
+  /** Creeaza un salon nou; contul devine automat de tip proprietar. */
+  createSalon(draft: SalonDraft): Observable<SalonCard> {
+    this.pending.set(true);
+    this.error.set('');
+    this.fieldErrors.set({});
+
+    return this.api.post<SalonCard>('/owner/salons', draft).pipe(
+      tap({
+        next: (salon) => {
+          this.pending.set(false);
+          this.salons.update((list) => [...list, salon]);
+        },
+        error: (err) => {
+          this.pending.set(false);
+          this.fail(err);
+        }
+      })
+    );
+  }
+
+  updateSalon(salonId: number, draft: SalonDraft): Observable<SalonCard> {
+    this.pending.set(true);
+    this.error.set('');
+    this.fieldErrors.set({});
+
+    return this.api.patch<SalonCard>(`/owner/salons/${salonId}`, draft).pipe(
+      tap({
+        next: () => {
+          this.pending.set(false);
+          this.message.set('Datele salonului au fost salvate.');
+          this.select(salonId);
+        },
+        error: (err) => {
+          this.pending.set(false);
+          this.fail(err);
+        }
+      })
+    );
+  }
+
+  saveHours(salonId: number, hours: OpeningHours[]): Observable<OpeningHours[]> {
+    return this.api.put<OpeningHours[]>(`/owner/salons/${salonId}/hours`, { hours }).pipe(
+      tap({
+        next: () => {
+          this.message.set('Programul a fost salvat.');
+          this.select(salonId);
+        },
+        error: (err) => this.fail(err)
+      })
+    );
+  }
+
+  addStaff(salonId: number, member: { name: string; role: string }): Observable<StaffMember> {
+    this.pending.set(true);
+    return this.api.post<StaffMember>(`/owner/salons/${salonId}/staff`, member).pipe(
+      tap({
+        next: () => {
+          this.pending.set(false);
+          this.message.set('Specialistul a fost adăugat.');
+          this.select(salonId);
+        },
+        error: (err) => {
+          this.pending.set(false);
+          this.fail(err);
+        }
+      })
+    );
+  }
+
+  removeStaff(salonId: number, staffId: number): Observable<unknown> {
+    return this.api.delete(`/owner/staff/${staffId}`).pipe(
+      tap({
+        next: () => {
+          this.message.set('Specialistul a fost șters.');
+          this.select(salonId);
+        },
+        error: (err) => this.fail(err)
+      })
+    );
+  }
+
+  /** Genereaza intervalele libere din programul de lucru. */
+  generateSlots(salonId: number, options: { days: number; stepMin: number }): Observable<{ created: number; message: string }> {
+    this.pending.set(true);
+    return this.api.post<{ created: number; message: string }>(`/owner/salons/${salonId}/slots`, options).pipe(
+      tap({
+        next: (result) => {
+          this.pending.set(false);
+          this.message.set(result.message);
+          this.select(salonId);
+        },
+        error: (err) => {
+          this.pending.set(false);
+          this.fail(err);
+        }
+      })
+    );
+  }
+
+  clearSlots(salonId: number): Observable<unknown> {
+    return this.api.delete(`/owner/salons/${salonId}/slots`).pipe(
+      tap({
+        next: () => {
+          this.message.set('Intervalele libere au fost șterse.');
+          this.select(salonId);
+        },
+        error: (err) => this.fail(err)
+      })
+    );
   }
 
   addService(salonId: number, service: NewService): Observable<SalonService> {

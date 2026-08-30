@@ -166,6 +166,32 @@ async function main() {
     await open(page, '/autentificare');
     await shoot(page, '13-autentificare');
 
+    // formularul de salon nou si generarea intervalelor
+    await open(page, '/salon-nou');
+    await page.evaluate(() => {
+      const set = (name, value) => {
+        const input = document.querySelector(`[formcontrolname="${name}"]`);
+        if (!input) return;
+        const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+        setter?.call(input, value);
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      };
+      set('name', 'Studio Aurora');
+      set('city', 'Brașov');
+      set('address', 'Str. Republicii 8');
+      set('tagline', 'Coafură și make-up în centrul vechi');
+    });
+    await wait(600);
+    await shoot(page, '16-salon-nou');
+
+    await open(page, '/salonul-meu');
+    await wait(1200);
+    await page.evaluate(() => {
+      [...document.querySelectorAll('.owner__tabs button')].find((b) => b.textContent.trim() === 'Intervale')?.click();
+    });
+    await wait(800);
+    await shoot(page, '17-intervale');
+
     console.log('Captura mobil…');
     const guest = await browser.createBrowserContext();
     const mobile = await guest.newPage();

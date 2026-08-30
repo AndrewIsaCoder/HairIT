@@ -142,7 +142,21 @@ export interface PlatformFilters {
 export interface OwnerSalon extends SalonCard {
   services: SalonService[];
   staff: StaffMember[];
+  hours: OpeningHours[];
   stats: { total: number; booked: number; available: number; occupancy: number; revenue: number };
+}
+
+/** Datele trimise la crearea sau editarea unui salon. */
+export interface SalonDraft {
+  name: string;
+  tagline: string;
+  description: string;
+  category: string;
+  city: string;
+  address: string;
+  phone: string;
+  email: string;
+  coverImage: string;
 }
 
 export interface ApiError {

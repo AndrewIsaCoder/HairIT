@@ -1,0 +1,125 @@
+<section class="new-salon shell">
+  <header class="new-salon__head">
+    <p class="eyebrow">Pentru saloane</p>
+    <h1 class="new-salon__title">Adaugă-ți salonul</h1>
+    <p class="new-salon__lead">
+      Completează datele de mai jos și salonul apare imediat în catalog. După aceea adaugi
+      serviciile, specialiștii și generezi intervalele din agendă.
+    </p>
+  </header>
+
+  <div class="new-salon__layout">
+    <form class="form new-salon__form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <p class="form__error" *ngIf="store.error()">{{ store.error() }}</p>
+
+      <div class="new-salon__grid">
+        <label class="field new-salon__wide" [class.is-invalid]="invalid('name')">
+          <span class="field__label">Numele salonului</span>
+          <input type="text" formControlName="name" placeholder="Salonul Meu" />
+          <span class="field__error" *ngIf="invalid('name')">
+            {{ serverError('name') || 'Numele trebuie să aibă minim 3 caractere.' }}
+          </span>
+        </label>
+
+        <label class="field" [class.is-invalid]="invalid('category')">
+          <span class="field__label">Categorie</span>
+          <select formControlName="category">
+            <option *ngFor="let item of categories" [value]="item">{{ item }}</option>
+          </select>
+        </label>
+
+        <label class="field" [class.is-invalid]="invalid('city')">
+          <span class="field__label">Oraș</span>
+          <input type="text" formControlName="city" placeholder="București" />
+          <span class="field__error" *ngIf="invalid('city')">
+            {{ serverError('city') || 'Orașul este obligatoriu.' }}
+          </span>
+        </label>
+
+        <label class="field new-salon__wide">
+          <span class="field__label">Adresă</span>
+          <input type="text" formControlName="address" placeholder="Str. Exemplu 10" />
+        </label>
+
+        <label class="field new-salon__wide">
+          <span class="field__label">Descriere scurtă</span>
+          <input type="text" formControlName="tagline" placeholder="Tuns, culoare și îngrijire, în centru" />
+        </label>
+
+        <label class="field" [class.is-invalid]="invalid('phone')">
+          <span class="field__label">Telefon</span>
+          <input type="tel" formControlName="phone" placeholder="+40 7xx xxx xxx" />
+          <span class="field__error" *ngIf="invalid('phone')">
+            {{ serverError('phone') || 'Numărul de telefon nu este valid.' }}
+          </span>
+        </label>
+
+        <label class="field" [class.is-invalid]="invalid('email')">
+          <span class="field__label">Email</span>
+          <input type="email" formControlName="email" placeholder="contact@salon.ro" />
+          <span class="field__error" *ngIf="invalid('email')">
+            {{ serverError('email') || 'Adresa de email nu este validă.' }}
+          </span>
+        </label>
+
+        <label class="field new-salon__wide">
+          <span class="field__label">Despre salon</span>
+          <textarea
+            rows="4"
+            formControlName="description"
+            placeholder="Povestea salonului, ce vă diferențiază, ce produse folosiți."
+          ></textarea>
+        </label>
+      </div>
+
+      <div class="covers">
+        <p class="field__label">Fotografia de copertă</p>
+        <ul class="covers__grid">
+          <li *ngFor="let item of covers">
+            <button
+              type="button"
+              [ngClass]="{ 'is-active': cover() === item.src }"
+              (click)="cover.set(item.src)"
+              [attr.aria-label]="item.label"
+            >
+              <img [src]="item.src" [alt]="item.label" loading="lazy" />
+              <span>{{ item.label }}</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <div class="new-salon__actions">
+        <button type="submit" class="pill pill--dark pill--arrow" [disabled]="store.pending()">
+          {{ store.pending() ? 'Se creează…' : 'Publică salonul' }}
+          <span class="pill__badge"><hairit-icon name="arrow-right" /></span>
+        </button>
+        <a class="pill pill--outline" routerLink="/salonul-meu" *ngIf="auth.isOwner()">Renunță</a>
+      </div>
+    </form>
+
+    <aside class="new-salon__aside">
+      <div class="preview">
+        <img [src]="cover()" alt="" />
+        <div class="preview__body">
+          <span class="preview__category">{{ form.controls.category.value }}</span>
+          <p class="preview__name">{{ form.controls.name.value || 'Numele salonului' }}</p>
+          <p class="preview__tagline">
+            {{ form.controls.tagline.value || 'Descrierea scurtă apare aici.' }}
+          </p>
+          <p class="preview__place">
+            <hairit-icon name="map-pin" />
+            {{ location() }}
+          </p>
+        </div>
+      </div>
+
+      <ol class="next-steps">
+        <li><span>1</span> Publici salonul</li>
+        <li><span>2</span> Adaugi serviciile și specialiștii</li>
+        <li><span>3</span> Generezi intervalele din agendă</li>
+        <li><span>4</span> Primești rezervări</li>
+      </ol>
+    </aside>
+  </div>
+</section>

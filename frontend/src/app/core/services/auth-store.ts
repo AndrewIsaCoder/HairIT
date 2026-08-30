@@ -40,13 +40,19 @@ export class AuthStore {
       .join('');
   });
 
-  /** Verifica sesiunea existenta la pornirea aplicatiei. */
-  restore(): void {
-    this.api.get<User>('/auth/me').subscribe({
-      next: (user) => {
+  /** Reciteste utilizatorul curent de pe server (de exemplu dupa schimbarea rolului). */
+  refreshUser(): Observable<User> {
+    return this.api.get<User>('/auth/me').pipe(
+      tap((user) => {
         this.user.set(user);
         this.checked.set(true);
-      },
+      })
+    );
+  }
+
+  /** Verifica sesiunea existenta la pornirea aplicatiei. */
+  restore(): void {
+    this.refreshUser().subscribe({
       error: () => {
         this.user.set(null);
         this.checked.set(true);

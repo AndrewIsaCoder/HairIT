@@ -44,3 +44,10 @@ export async function updatePassword(id, password) {
 }
 
 export { PUBLIC_COLUMNS };
+
+/** Un client care isi adauga primul salon devine proprietar. */
+export async function promoteToOwner(id) {
+  const db = await getDb();
+  await db.run("UPDATE users SET role = 'owner' WHERE id = ? AND role = 'client'", [Number(id)]);
+  return findById(id);
+}

@@ -33,7 +33,8 @@ export class NavMenu {
     { label: 'Acasă', path: '/' },
     { label: 'Saloane', path: '/saloane' },
     { label: 'Contul meu', path: '/contul-meu', authOnly: true },
-    { label: 'Salonul meu', path: '/salonul-meu', ownerOnly: true }
+    { label: 'Salonul meu', path: '/salonul-meu', ownerOnly: true },
+    { label: 'Adaugă un salon', path: '/salon-nou', authOnly: true }
   ];
 
   protected visible(link: MenuLink): boolean {
