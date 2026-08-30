@@ -5,15 +5,9 @@
 <hairit-site-header />
 
 <main id="main">
-  <hairit-hero-section id="acasa" />
-  <hairit-services-section id="servicii" />
-  <hairit-booking-section id="programari" />
-  <hairit-studio-section id="studio" />
-  <hairit-team-section id="echipa" />
-  <hairit-stats-section />
+  <router-outlet />
 </main>
 
-<hairit-site-footer id="contact" />
+<hairit-site-footer />
 
 <hairit-nav-menu *ngIf="ui.menuOpen()" />
-<hairit-request-modal *ngIf="ui.modalOpen()" />

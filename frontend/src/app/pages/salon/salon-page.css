@@ -1,0 +1,663 @@
+.salon__loading {
+  padding: 6rem 1.5rem;
+  text-align: center;
+  font-size: 0.95rem;
+  color: rgba(17, 17, 17, 0.5);
+}
+
+/* --------------------------------------------------------------- antet */
+
+.salon__hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 0 0 var(--radius-card) var(--radius-card);
+  background: var(--ink);
+  margin-top: -4.2rem;
+  padding-top: 4.2rem;
+}
+
+.salon__cover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.55;
+}
+
+.salon__hero-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(10, 10, 10, 0.95), rgba(10, 10, 10, 0.35));
+}
+
+.salon__hero-body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding-block: 4rem 2.5rem;
+  color: #fff;
+}
+
+.salon__category {
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.15);
+  padding: 0.35rem 0.9rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.salon__name {
+  font-size: 2.25rem;
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.salon__tagline {
+  max-width: 44ch;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.salon__facts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.1rem;
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.salon__facts span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.salon__facts hairit-icon { color: var(--accent-from); }
+.salon__facts .rating__value { color: #fff; }
+.salon__free { color: #a8d8b9; }
+
+.salon__favorite {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: var(--radius-pill);
+  padding: 0.55rem 1.1rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.8);
+  transition: border-color 0.25s ease, color 0.25s ease, background 0.25s ease;
+}
+
+.salon__favorite:hover { border-color: rgba(255, 255, 255, 0.55); color: #fff; }
+.salon__favorite.is-on { background: rgba(255, 255, 255, 0.12); color: #fff; }
+
+/* -------------------------------------------------------------- layout */
+
+.salon__layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  padding-block: 2.5rem 5rem;
+  align-items: start;
+}
+
+.salon__main {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  min-width: 0;
+}
+
+/* --------------------------------------------------------------- pași */
+
+.step__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.step__index {
+  display: grid;
+  place-items: center;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-pill);
+  background: var(--ink);
+  color: var(--accent-from);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.step__title {
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.step__text {
+  margin-top: 0.15rem;
+  font-size: 0.85rem;
+  color: rgba(17, 17, 17, 0.55);
+}
+
+.step__empty {
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-card-sm);
+  padding: 1.25rem;
+  font-size: 0.85rem;
+  color: rgba(17, 17, 17, 0.5);
+}
+
+/* ------------------------------------------------------------ servicii */
+
+.services {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.6rem;
+}
+
+.services__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card-sm);
+  background: #fff;
+  padding: 1rem 1.1rem;
+  text-align: left;
+  transition: border-color 0.25s ease, background 0.25s ease, transform 0.3s ease;
+}
+
+.services__item:hover { transform: translateY(-2px); border-color: rgba(17, 17, 17, 0.2); }
+
+.services__item.is-active {
+  border-color: var(--ink);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.services__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.services__name { font-size: 0.98rem; font-weight: 600; }
+.services__price { font-size: 0.9rem; font-weight: 600; color: var(--accent); }
+
+.services__meta {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(17, 17, 17, 0.45);
+}
+
+.services__description {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: rgba(17, 17, 17, 0.55);
+}
+
+.services__item--all { align-items: flex-start; }
+
+/* ---------------------------------------------------------- specialiști */
+
+.staff {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.staff__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card-sm);
+  background: #fff;
+  padding: 1rem 0.75rem;
+  text-align: center;
+  transition: border-color 0.25s ease, background 0.25s ease, transform 0.3s ease;
+}
+
+.staff__item:hover { transform: translateY(-2px); }
+
+.staff__item.is-active {
+  border-color: var(--ink);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.staff__avatar {
+  display: block;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.staff__avatar--any {
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 1.1rem;
+}
+
+.staff__name { font-size: 0.85rem; font-weight: 600; }
+.staff__role { font-size: 0.7rem; color: rgba(17, 17, 17, 0.5); }
+
+/* ---------------------------------------------------------- zile și ore */
+
+.days {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scrollbar-width: thin;
+}
+
+.day {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  min-width: 5rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card-sm);
+  background: #fff;
+  padding: 0.8rem 0.7rem;
+  transition: transform 0.3s ease, border-color 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+
+.day:hover { transform: translateY(-3px); border-color: rgba(17, 17, 17, 0.25); }
+
+.day__weekday {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(17, 17, 17, 0.45);
+}
+
+.day__number { font-size: 1.3rem; font-weight: 600; line-height: 1.1; }
+.day__month { font-size: 0.68rem; color: rgba(17, 17, 17, 0.45); }
+.day__free { margin-top: 0.3rem; font-size: 0.63rem; font-weight: 500; color: var(--free); }
+
+.day.is-full .day__free { color: var(--busy); }
+
+.day.is-active { background: var(--ink); border-color: var(--ink); color: #fff; }
+.day.is-active .day__weekday,
+.day.is-active .day__month { color: rgba(255, 255, 255, 0.55); }
+.day.is-active .day__free { color: var(--accent-from); }
+
+.slots__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 1.25rem 0 1rem;
+}
+
+.slots__filters {
+  display: inline-flex;
+  gap: 0.3rem;
+  border-radius: var(--radius-pill);
+  background: #fff;
+  padding: 0.25rem;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.slots__filters button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: var(--radius-pill);
+  padding: 0.4rem 0.9rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: rgba(17, 17, 17, 0.6);
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+.slots__filters button em { font-style: normal; font-size: 0.68rem; opacity: 0.7; }
+.slots__filters button.is-active { background: var(--ink); color: #fff; }
+
+.slots__legend {
+  display: flex;
+  gap: 0.9rem;
+  font-size: 0.72rem;
+  color: rgba(17, 17, 17, 0.55);
+}
+
+.slots__legend li { display: inline-flex; align-items: center; gap: 0.35rem; }
+
+.dot { width: 0.5rem; height: 0.5rem; border-radius: var(--radius-pill); }
+.dot--free { background: var(--free); }
+.dot--busy { background: var(--busy); }
+
+.slots {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.slot {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card-sm);
+  background: #fff;
+  padding: 0.85rem 1rem;
+  text-align: left;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.25s ease;
+}
+
+.slot:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+.slot__time {
+  min-width: 3.2rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.slot__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.slot__service { font-size: 0.88rem; font-weight: 500; }
+
+.slot__staff {
+  font-size: 0.72rem;
+  color: rgba(17, 17, 17, 0.5);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.slot__status {
+  border-radius: var(--radius-pill);
+  padding: 0.28rem 0.7rem;
+  font-size: 0.66rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* verde pentru intervalele libere, roșu pentru cele ocupate */
+.slot--available { border-color: var(--free-line); background: var(--free-soft); }
+.slot--available .slot__time { color: var(--free); }
+.slot--available .slot__status { background: rgba(63, 125, 85, 0.14); color: var(--free); }
+
+.slot--booked { border-color: var(--busy-line); background: var(--busy-soft); }
+.slot--booked .slot__time { color: var(--busy); }
+.slot--booked .slot__status { background: rgba(178, 69, 60, 0.14); color: var(--busy); }
+
+.slot.is-selected { box-shadow: 0 0 0 1px var(--ink), var(--shadow-md); border-color: var(--ink); }
+
+/* --------------------------------------------------------------- echipa */
+
+.team {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.team li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: var(--radius-card-sm);
+  background: var(--surface);
+  padding: 1.1rem 0.75rem;
+  text-align: center;
+}
+
+.team__avatar { display: block; width: 2.75rem; height: 2.75rem; margin-bottom: 0.25rem; }
+.team__name { font-size: 0.88rem; font-weight: 600; }
+.team__role { font-size: 0.72rem; color: rgba(17, 17, 17, 0.5); }
+
+/* -------------------------------------------------------- despre, program */
+
+.salon__description {
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: rgba(17, 17, 17, 0.65);
+}
+
+.hours {
+  margin-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+
+.hours li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--line);
+  padding: 0.6rem 0;
+  font-size: 0.85rem;
+}
+
+.hours li span:first-child { color: rgba(17, 17, 17, 0.6); }
+.hours li.is-closed span:last-child { color: var(--busy); }
+
+/* ------------------------------------------------------------- recenzii */
+
+.review-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card-sm);
+  background: var(--surface);
+  padding: 1.25rem;
+}
+
+.review-form__title { font-size: 0.95rem; font-weight: 600; }
+.review-form__submit { align-self: flex-start; }
+
+.review-hint {
+  margin-bottom: 1.25rem;
+  font-size: 0.82rem;
+  color: rgba(17, 17, 17, 0.5);
+}
+
+.reviews {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.reviews li {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card-sm);
+  background: #fff;
+  padding: 1rem 1.1rem;
+}
+
+.reviews__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.reviews__author {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.reviews__author hairit-avatar { display: block; width: 2rem; height: 2rem; }
+
+.reviews__comment {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: rgba(17, 17, 17, 0.65);
+}
+
+.reviews__time {
+  margin-top: 0.4rem;
+  font-size: 0.7rem;
+  color: rgba(17, 17, 17, 0.4);
+}
+
+/* -------------------------------------------------------------- rezumat */
+
+.salon__aside {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.summary {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: #fff;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.summary__eyebrow {
+  font-size: 0.68rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(17, 17, 17, 0.45);
+}
+
+.summary__list {
+  margin: 1rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.summary__list > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--line);
+  padding: 0.6rem 0;
+}
+
+.summary__list dt { font-size: 0.78rem; color: rgba(17, 17, 17, 0.5); }
+.summary__list dd { font-size: 0.85rem; font-weight: 500; text-align: right; }
+
+.summary__total dd { font-size: 1rem; font-weight: 600; color: var(--accent); }
+
+.summary__hint {
+  font-size: 0.8rem;
+  color: rgba(17, 17, 17, 0.5);
+}
+
+.summary__guest {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  padding: 1rem;
+  font-size: 0.82rem;
+}
+
+.summary__link { font-size: 0.75rem; color: var(--accent); }
+
+.summary__form { margin-top: 1rem; }
+
+.summary__done {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.summary__check {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-pill);
+  background: var(--free-soft);
+  color: var(--free);
+  font-size: 1.25rem;
+}
+
+.summary__title { font-size: 1.125rem; font-weight: 600; }
+
+.summary__text {
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: rgba(17, 17, 17, 0.6);
+}
+
+.contact-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  padding: 1.25rem;
+  font-size: 0.82rem;
+  color: rgba(17, 17, 17, 0.65);
+}
+
+.contact-card__title {
+  font-size: 0.68rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(17, 17, 17, 0.45);
+}
+
+.contact-card p { display: flex; align-items: center; gap: 0.5rem; }
+.contact-card hairit-icon { color: var(--accent); }
+
+/* ---------------------------------------------------------- ecrane mari */
+
+@media (min-width: 641px) {
+  .salon__name { font-size: 3rem; }
+  .services { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .staff { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .team { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .slots { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .salon__hero-body { padding-block: 6rem 3rem; }
+}
+
+@media (min-width: 1025px) {
+  .salon__layout { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 3rem; }
+  .salon__aside { position: sticky; top: 5.5rem; }
+  .slots { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,264 @@
+.account { padding-block: 2.5rem 5rem; }
+
+.account__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 1.5rem;
+}
+
+.account__avatar {
+  display: block;
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+.account__title {
+  margin-top: 0.35rem;
+  font-size: 1.875rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.account__meta {
+  margin-top: 0.2rem;
+  font-size: 0.85rem;
+  color: rgba(17, 17, 17, 0.55);
+}
+
+.account__role {
+  margin-left: 0.4rem;
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft);
+  padding: 0.15rem 0.6rem;
+  font-size: 0.7rem;
+  color: var(--accent-to);
+}
+
+.account__head .pill { margin-left: auto; }
+
+/* --------------------------------------------------------------- taburi */
+
+.account__tabs {
+  display: flex;
+  gap: 0.35rem;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.account__tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 0 0 auto;
+  border-radius: var(--radius-pill);
+  padding: 0.55rem 1.1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(17, 17, 17, 0.6);
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+.account__tabs button:hover { background: var(--surface); color: var(--fg); }
+.account__tabs button.is-active { background: var(--ink); color: #fff; }
+
+.account__tabs em {
+  font-style: normal;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  padding: 0.05rem 0.4rem;
+  font-size: 0.65rem;
+  color: #fff;
+}
+
+.account__tabs button.is-active em { background: var(--accent-from); }
+
+.account__section {
+  margin-bottom: 1rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.account__body { display: flex; flex-direction: column; gap: 1rem; }
+.account__body--forms { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+
+/* ---------------------------------------------------------- programări */
+
+.bookings {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 2rem;
+}
+
+.bookings li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card-sm);
+  background: #fff;
+  padding: 1rem 1.25rem;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.bookings li:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+.bookings__when {
+  display: flex;
+  flex-direction: column;
+  min-width: 5rem;
+}
+
+.bookings__time {
+  font-size: 1.25rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+
+.bookings__day {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(17, 17, 17, 0.45);
+}
+
+.bookings__body { flex: 1; min-width: 12rem; }
+
+.bookings__service { font-size: 1rem; font-weight: 600; }
+
+.bookings__salon {
+  margin-top: 0.1rem;
+  font-size: 0.82rem;
+  color: rgba(17, 17, 17, 0.55);
+}
+
+.bookings__salon a { font-weight: 500; color: var(--fg); }
+.bookings__salon a:hover { color: var(--accent); }
+
+.bookings__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+  font-size: 0.75rem;
+  color: rgba(17, 17, 17, 0.5);
+}
+
+.bookings__dot { color: rgba(17, 17, 17, 0.25); }
+
+.bookings__notes {
+  margin-top: 0.35rem;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: rgba(17, 17, 17, 0.5);
+}
+
+.bookings__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+  margin-left: auto;
+}
+
+.bookings__date {
+  font-size: 0.75rem;
+  color: rgba(17, 17, 17, 0.45);
+}
+
+.bookings__cancel {
+  border: 1px solid var(--busy-line);
+  border-radius: var(--radius-pill);
+  background: var(--busy-soft);
+  padding: 0.4rem 0.9rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--busy);
+  transition: background 0.25s ease;
+}
+
+.bookings__cancel:hover { background: #f7ddd9; }
+.bookings__cancel:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.bookings--past li { background: var(--surface); }
+.bookings--past .bookings__time { color: rgba(17, 17, 17, 0.5); }
+
+.bookings__price { margin-left: auto; font-size: 0.85rem; font-weight: 600; }
+
+/* ------------------------------------------------------------- favorite */
+
+.account__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+/* ----------------------------------------------------------- notificări */
+
+.account__notice-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: rgba(17, 17, 17, 0.55);
+}
+
+.account__notice-head button {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.notices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.notices li {
+  display: flex;
+  gap: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card-sm);
+  background: #fff;
+  padding: 0.9rem 1.1rem;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+
+.notices li.is-unread { background: var(--accent-soft); border-color: rgba(177, 95, 44, 0.2); }
+.notices li:hover { background: var(--surface); }
+
+.notices__icon {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: 0 0 auto;
+  border-radius: var(--radius-pill);
+  background: #fff;
+  color: var(--accent);
+  font-size: 0.95rem;
+}
+
+.notices__title { font-size: 0.88rem; font-weight: 600; }
+.notices__body { margin-top: 0.1rem; font-size: 0.8rem; color: rgba(17, 17, 17, 0.6); }
+.notices__time { margin-top: 0.25rem; font-size: 0.7rem; color: rgba(17, 17, 17, 0.4); }
+
+@media (min-width: 641px) {
+  .account__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .account__body--forms { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+}
+
+@media (min-width: 1025px) {
+  .account__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}

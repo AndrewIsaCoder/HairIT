@@ -1,0 +1,41 @@
+<hairit-auth-shell eyebrow="Autentificare" title="Bine ai revenit" image="images/hero-primary.jpg">
+  <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <p class="form__error" *ngIf="auth.error()">{{ auth.error() }}</p>
+
+    <label class="field" [class.is-invalid]="invalid('email')">
+      <span class="field__label">Email</span>
+      <input type="email" formControlName="email" placeholder="tu@exemplu.ro" autocomplete="email" />
+      <span class="field__error" *ngIf="invalid('email')">Introdu o adresă de email validă.</span>
+    </label>
+
+    <label class="field" [class.is-invalid]="invalid('password')">
+      <span class="field__label">Parolă</span>
+      <input type="password" formControlName="password" placeholder="Parola ta" autocomplete="current-password" />
+      <span class="field__error" *ngIf="invalid('password')">Introdu parola.</span>
+    </label>
+
+    <button type="submit" class="pill pill--dark pill--arrow login__submit" [disabled]="auth.pending()">
+      {{ auth.pending() ? 'Se verifică…' : 'Intră în cont' }}
+      <span class="pill__badge"><hairit-icon name="arrow-right" /></span>
+    </button>
+
+    <p class="form__hint">
+      Nu ai cont? <a routerLink="/inregistrare">Creează unul acum</a>.
+    </p>
+  </form>
+
+  <div class="login__demo">
+    <p class="login__demo-title">Conturi demo</p>
+    <div class="login__demo-buttons">
+      <button type="button" (click)="useDemo('ana@exemplu.ro')">
+        <strong>Client</strong>
+        <span>ana&#64;exemplu.ro</span>
+      </button>
+      <button type="button" (click)="useDemo('owner@hairit.ro')">
+        <strong>Proprietar salon</strong>
+        <span>owner&#64;hairit.ro</span>
+      </button>
+    </div>
+    <p class="login__demo-note">Parola pentru ambele: <code>parola123</code></p>
+  </div>
+</hairit-auth-shell>

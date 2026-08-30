@@ -269,6 +269,117 @@ input, textarea, select { font: inherit; }
   .reveal { opacity: 1; transform: none; }
 }
 
+
+/* ---------- formulare ---------- */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field__label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(17, 17, 17, 0.5);
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: rgba(241, 240, 238, 0.5);
+  border-radius: var(--radius-control);
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: var(--fg);
+  outline: none;
+  transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.field textarea { resize: none; }
+
+.field input::placeholder,
+.field textarea::placeholder { color: rgba(17, 17, 17, 0.35); }
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: rgba(17, 17, 17, 0.3);
+  background: #fff;
+}
+
+.field.is-invalid input,
+.field.is-invalid select,
+.field.is-invalid textarea {
+  border-color: var(--busy-line);
+  background: var(--busy-soft);
+}
+
+.field__error {
+  font-size: 0.72rem;
+  color: var(--busy);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form__error {
+  border-radius: var(--radius-control);
+  background: var(--busy-soft);
+  padding: 0.75rem 1rem;
+  font-size: 0.82rem;
+  color: var(--busy);
+}
+
+.form__notice {
+  border-radius: var(--radius-control);
+  background: var(--accent-soft);
+  padding: 0.75rem 1rem;
+  font-size: 0.82rem;
+  color: var(--accent-to);
+}
+
+.form__success {
+  border-radius: var(--radius-control);
+  background: var(--free-soft);
+  padding: 0.75rem 1rem;
+  font-size: 0.82rem;
+  color: var(--free);
+}
+
+.form__hint {
+  font-size: 0.8rem;
+  color: rgba(17, 17, 17, 0.5);
+}
+
+.form__hint a { color: var(--accent); font-weight: 500; }
+
+/* ---------- carduri si sectiuni reutilizabile ---------- */
+
+.panel-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: #fff;
+  padding: 1.5rem;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+@media (min-width: 641px) {
+  .section-title { font-size: 1.875rem; }
+}
+
 /* sectiunile nu trebuie sa ajunga sub header-ul fix */
 main > *,
 footer {

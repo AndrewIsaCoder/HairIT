@@ -1,0 +1,45 @@
+<div class="menu__bar shell">
+  <a class="menu__brand" routerLink="/" (click)="close()">
+    <hairit-icon name="spark" class="menu__spark" />
+    HairIT
+  </a>
+  <button type="button" class="menu__close" (click)="close()">
+    <hairit-icon name="close" />
+    <span>Închide</span>
+  </button>
+</div>
+
+<nav class="menu__nav shell" aria-label="Meniu principal">
+  <ul>
+    <ng-container *ngFor="let link of links; let i = index">
+      <li *ngIf="visible(link)" [style.--stagger.ms]="i * 45 + 80">
+        <a [routerLink]="link.path" (click)="close()">
+          <span class="menu__index">{{ index(i) }}</span>
+          <span class="menu__label">{{ link.label }}</span>
+        </a>
+      </li>
+    </ng-container>
+  </ul>
+</nav>
+
+<div class="menu__footer shell">
+  <span>Ora locală — {{ clock.time() }}</span>
+
+  <span class="menu__auth" *ngIf="auth.isLoggedIn(); else guest">
+    <span class="menu__user">{{ auth.user()?.fullName }}</span>
+    <button type="button" class="menu__cta" (click)="logout()">
+      Deconectare
+      <hairit-icon name="logout" />
+    </button>
+  </span>
+
+  <ng-template #guest>
+    <span class="menu__auth">
+      <a class="menu__cta" routerLink="/autentificare" (click)="close()">Autentificare</a>
+      <a class="menu__cta menu__cta--accent" routerLink="/inregistrare" (click)="close()">
+        Cont nou
+        <hairit-icon name="arrow-right" />
+      </a>
+    </span>
+  </ng-template>
+</div>

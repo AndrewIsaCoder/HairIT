@@ -1,0 +1,206 @@
+<section class="account shell">
+  <header class="account__head">
+    <span class="account__avatar"><hairit-avatar [name]="auth.user()?.fullName || ''" [accent]="true" /></span>
+    <div>
+      <p class="eyebrow">Contul meu</p>
+      <h1 class="account__title">{{ auth.user()?.fullName }}</h1>
+      <p class="account__meta">
+        {{ auth.user()?.email }} · {{ auth.user()?.phone }}
+        <span class="account__role" *ngIf="auth.isOwner()">proprietar salon</span>
+      </p>
+    </div>
+
+    <a class="pill pill--outline pill--arrow" *ngIf="auth.isOwner()" routerLink="/salonul-meu">
+      Panoul salonului
+      <span class="pill__badge"><hairit-icon name="arrow-right" /></span>
+    </a>
+  </header>
+
+  <nav class="account__tabs" aria-label="Secțiunile contului">
+    <button
+      type="button"
+      *ngFor="let item of tabs"
+      [ngClass]="{ 'is-active': tab() === item.id }"
+      (click)="selectTab(item.id)"
+    >
+      {{ item.label }}
+      <em *ngIf="item.id === 'programari' && upcoming().length > 0">{{ upcoming().length }}</em>
+      <em *ngIf="item.id === 'notificari' && account.unread() > 0">{{ account.unread() }}</em>
+    </button>
+  </nav>
+
+  <!-- --------------------------------------------------------- programări -->
+  <div class="account__body" *ngIf="tab() === 'programari'">
+    <p class="form__success" *ngIf="account.message()">{{ account.message() }}</p>
+    <p class="form__error" *ngIf="account.error()">{{ account.error() }}</p>
+
+    <h2 class="account__section">Programări viitoare</h2>
+
+    <ul class="bookings" *ngIf="upcoming().length > 0; else noUpcoming">
+      <li *ngFor="let item of upcoming()">
+        <div class="bookings__when">
+          <span class="bookings__time">{{ item.time }}</span>
+          <span class="bookings__day">{{ whenLabel(item.date) }}</span>
+        </div>
+
+        <div class="bookings__body">
+          <h3 class="bookings__service">{{ item.service }}</h3>
+          <p class="bookings__salon">
+            <a [routerLink]="['/salon', item.salonSlug]">{{ item.salonName }}</a>
+            · {{ item.salonCity }}
+          </p>
+          <p class="bookings__meta">
+            <hairit-icon name="user" /> {{ item.staff }}
+            <span class="bookings__dot">·</span>
+            <hairit-icon name="clock" /> {{ item.durationMin }} min
+            <span class="bookings__dot">·</span>
+            {{ money(item.price) }}
+          </p>
+          <p class="bookings__notes" *ngIf="item.notes">„{{ item.notes }}”</p>
+        </div>
+
+        <div class="bookings__actions">
+          <span class="bookings__date">{{ longDate(item.date) }}</span>
+          <button
+            type="button"
+            class="bookings__cancel"
+            (click)="cancel(item)"
+            [disabled]="cancelling() === item.id"
+          >
+            {{ cancelling() === item.id ? 'Se anulează…' : 'Anulează' }}
+          </button>
+        </div>
+      </li>
+    </ul>
+
+    <ng-template #noUpcoming>
+      <hairit-empty-state
+        icon="calendar"
+        title="Nu ai programări viitoare"
+        text="Caută un salon și rezervă primul interval liber."
+      >
+        <a class="pill pill--dark" routerLink="/saloane">Caută saloane</a>
+      </hairit-empty-state>
+    </ng-template>
+
+    <ng-container *ngIf="past().length > 0">
+      <h2 class="account__section">Istoric</h2>
+      <ul class="bookings bookings--past">
+        <li *ngFor="let item of past()">
+          <div class="bookings__when">
+            <span class="bookings__time">{{ item.time }}</span>
+            <span class="bookings__day">{{ longDate(item.date) }}</span>
+          </div>
+          <div class="bookings__body">
+            <h3 class="bookings__service">{{ item.service }}</h3>
+            <p class="bookings__salon">
+              <a [routerLink]="['/salon', item.salonSlug]">{{ item.salonName }}</a>
+            </p>
+          </div>
+          <span class="bookings__price">{{ money(item.price) }}</span>
+        </li>
+      </ul>
+    </ng-container>
+  </div>
+
+  <!-- ------------------------------------------------------------ favorite -->
+  <div class="account__body" *ngIf="tab() === 'favorite'">
+    <ul class="account__grid" *ngIf="account.favorites().length > 0; else noFavorites">
+      <li *ngFor="let salon of account.favorites()">
+        <hairit-salon-card [salon]="salon" (favoriteToggled)="toggleFavorite($event)" />
+      </li>
+    </ul>
+
+    <ng-template #noFavorites>
+      <hairit-empty-state
+        icon="heart"
+        title="Nu ai saloane favorite"
+        text="Apasă inima de pe cardul unui salon ca să îl găsești mai ușor data viitoare."
+      >
+        <a class="pill pill--dark" routerLink="/saloane">Caută saloane</a>
+      </hairit-empty-state>
+    </ng-template>
+  </div>
+
+  <!-- --------------------------------------------------------- notificări -->
+  <div class="account__body" *ngIf="tab() === 'notificari'">
+    <div class="account__notice-head" *ngIf="account.notifications().length > 0">
+      <span>{{ account.unread() }} necitite</span>
+      <button type="button" *ngIf="account.unread() > 0" (click)="account.markAllRead()">
+        Marchează tot ca citit
+      </button>
+    </div>
+
+    <ul class="notices" *ngIf="account.notifications().length > 0; else noNotices">
+      <li *ngFor="let item of account.notifications()" [class.is-unread]="!item.isRead" (click)="markRead(item.id)">
+        <span class="notices__icon"><hairit-icon name="bell" /></span>
+        <div>
+          <p class="notices__title">{{ item.title }}</p>
+          <p class="notices__body">{{ item.body }}</p>
+          <p class="notices__time">{{ relative(item.createdAt) }}</p>
+        </div>
+      </li>
+    </ul>
+
+    <ng-template #noNotices>
+      <hairit-empty-state
+        icon="bell"
+        title="Nicio notificare"
+        text="Aici apar confirmările, anulările și reprogramările."
+      />
+    </ng-template>
+  </div>
+
+  <!-- -------------------------------------------------------------- profil -->
+  <div class="account__body account__body--forms" *ngIf="tab() === 'profil'">
+    <div class="panel-card">
+      <h2 class="account__section">Date personale</h2>
+
+      <form class="form" [formGroup]="profileForm" (ngSubmit)="saveProfile()" novalidate>
+        <p class="form__error" *ngIf="auth.error()">{{ auth.error() }}</p>
+        <p class="form__success" *ngIf="savedProfile()">Datele au fost salvate.</p>
+
+        <label class="field">
+          <span class="field__label">Nume complet</span>
+          <input type="text" formControlName="fullName" autocomplete="name" />
+        </label>
+
+        <label class="field">
+          <span class="field__label">Telefon</span>
+          <input type="tel" formControlName="phone" autocomplete="tel" />
+        </label>
+
+        <label class="field">
+          <span class="field__label">Email</span>
+          <input type="email" [value]="auth.user()?.email" disabled />
+        </label>
+
+        <button type="submit" class="pill pill--dark" [disabled]="auth.pending()">
+          {{ auth.pending() ? 'Se salvează…' : 'Salvează' }}
+        </button>
+      </form>
+    </div>
+
+    <div class="panel-card">
+      <h2 class="account__section">Schimbă parola</h2>
+
+      <form class="form" [formGroup]="passwordForm" (ngSubmit)="changePassword()" novalidate>
+        <p class="form__success" *ngIf="passwordDone()">
+          Parola a fost schimbată. Te redirecționăm către autentificare…
+        </p>
+
+        <label class="field">
+          <span class="field__label">Parola actuală</span>
+          <input type="password" formControlName="currentPassword" autocomplete="current-password" />
+        </label>
+
+        <label class="field">
+          <span class="field__label">Parola nouă</span>
+          <input type="password" formControlName="newPassword" autocomplete="new-password" />
+        </label>
+
+        <button type="submit" class="pill pill--outline" [disabled]="auth.pending()">Schimbă parola</button>
+      </form>
+    </div>
+  </div>
+</section>

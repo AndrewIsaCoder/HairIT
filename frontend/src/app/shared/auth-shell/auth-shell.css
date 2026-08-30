@@ -1,0 +1,96 @@
+.auth {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: calc(100vh - 4.5rem);
+}
+
+.auth__aside {
+  position: relative;
+  display: none;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+.auth__aside img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.45;
+}
+
+.auth__aside-body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 1.25rem;
+  height: 100%;
+  padding: 3rem;
+  color: #fff;
+  background: linear-gradient(to top, rgba(10, 10, 10, 0.92), rgba(10, 10, 10, 0.25));
+}
+
+.auth__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.auth__brand hairit-icon { color: var(--accent-from); }
+
+.auth__pitch {
+  max-width: 28ch;
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+}
+
+.auth__points {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.auth__points li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.auth__points hairit-icon { color: var(--accent-from); font-size: 0.9rem; }
+
+.auth__form {
+  display: grid;
+  place-items: center;
+  padding: 3rem 1.25rem 4rem;
+}
+
+.auth__form-inner {
+  width: 100%;
+  max-width: 26rem;
+}
+
+.auth__title {
+  margin: 0.75rem 0 1.75rem;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+@media (min-width: 641px) {
+  .auth__form { padding-inline: 2rem; }
+}
+
+@media (min-width: 1025px) {
+  .auth { grid-template-columns: 1fr 1fr; }
+  .auth__aside { display: block; }
+  .auth__title { font-size: 2.5rem; }
+}

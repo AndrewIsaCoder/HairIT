@@ -1,0 +1,326 @@
+.owner { padding-block: 2.5rem 5rem; }
+
+.owner__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.owner__title {
+  margin-top: 0.5rem;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.owner__meta {
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  color: rgba(17, 17, 17, 0.55);
+}
+
+.owner__salons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.owner__salons button {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  padding: 0.5rem 1.1rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: rgba(17, 17, 17, 0.65);
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+.owner__salons button:hover { border-color: rgba(17, 17, 17, 0.3); }
+.owner__salons button.is-active { background: var(--ink); border-color: var(--ink); color: #fff; }
+
+/* --------------------------------------------------------------- cifre */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 2.5rem;
+}
+
+.stats li {
+  border-radius: var(--radius-card-sm);
+  background: var(--ink);
+  padding: 1.25rem;
+  color: #fff;
+}
+
+.stats__value {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.stats__label {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* -------------------------------------------------------------- blocuri */
+
+.block { margin-bottom: 3rem; }
+
+.block__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.block__title { font-size: 1.375rem; font-weight: 600; letter-spacing: -0.015em; }
+.block__text { margin-top: 0.15rem; font-size: 0.82rem; color: rgba(17, 17, 17, 0.55); }
+
+.block__empty {
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-card-sm);
+  padding: 1.5rem;
+  font-size: 0.85rem;
+  color: rgba(17, 17, 17, 0.5);
+}
+
+.block__filters {
+  display: inline-flex;
+  gap: 0.3rem;
+  border-radius: var(--radius-pill);
+  background: #fff;
+  padding: 0.25rem;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.block__filters button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: var(--radius-pill);
+  padding: 0.4rem 0.9rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: rgba(17, 17, 17, 0.6);
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+.block__filters em { font-style: normal; font-size: 0.68rem; opacity: 0.7; }
+.block__filters button.is-active { background: var(--ink); color: #fff; }
+
+/* ----------------------------------------------------------------- zile */
+
+.days {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.day {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 5.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card-sm);
+  background: #fff;
+  padding: 0.8rem 0.7rem;
+  transition: transform 0.3s ease, background 0.25s ease, color 0.25s ease;
+}
+
+.day:hover { transform: translateY(-3px); }
+
+.day__weekday { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(17, 17, 17, 0.45); }
+.day__number { font-size: 1.3rem; font-weight: 600; }
+.day__month { font-size: 0.68rem; color: rgba(17, 17, 17, 0.45); }
+.day__booked { margin-top: 0.3rem; font-size: 0.63rem; font-weight: 500; color: var(--accent); }
+
+.day.is-active { background: var(--ink); border-color: var(--ink); color: #fff; }
+.day.is-active .day__weekday,
+.day.is-active .day__month { color: rgba(255, 255, 255, 0.55); }
+.day.is-active .day__booked { color: var(--accent-from); }
+
+/* --------------------------------------------------------------- agenda */
+
+.agenda {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.agenda li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.6rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card-sm);
+  background: #fff;
+  padding: 0.9rem 1.1rem;
+}
+
+.agenda li.is-booked { border-color: var(--busy-line); background: var(--busy-soft); }
+.agenda li.is-free { border-color: var(--free-line); background: var(--free-soft); }
+
+.agenda__time {
+  font-size: 1.05rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.agenda li.is-booked .agenda__time { color: var(--busy); }
+.agenda li.is-free .agenda__time { color: var(--free); }
+
+.agenda__staff {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.agenda__avatar { display: block; width: 1.9rem; height: 1.9rem; }
+
+.agenda__service {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.agenda__service em,
+.agenda__client em {
+  font-style: normal;
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: rgba(17, 17, 17, 0.5);
+}
+
+.agenda__client {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85rem;
+}
+
+.agenda__client--free { color: rgba(17, 17, 17, 0.45); }
+.agenda__notes { font-style: italic; }
+
+.agenda__cancel {
+  border: 1px solid var(--busy-line);
+  border-radius: var(--radius-pill);
+  background: #fff;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--busy);
+  transition: background 0.25s ease;
+}
+
+.agenda__cancel:hover { background: var(--busy-soft); }
+
+/* ------------------------------------------------------------- servicii */
+
+.service-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card-sm);
+  background: var(--surface);
+  padding: 1.25rem;
+}
+
+.service-form__submit { justify-self: start; }
+
+.services {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.services li {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card-sm);
+  background: #fff;
+  padding: 0.85rem 1.1rem;
+}
+
+.services__name {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.services__name em {
+  font-style: normal;
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: rgba(17, 17, 17, 0.5);
+}
+
+.services__price { font-size: 0.9rem; font-weight: 600; color: var(--accent); }
+
+.services__remove {
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: rgba(17, 17, 17, 0.5);
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+.services__remove:hover { background: var(--busy-soft); color: var(--busy); }
+
+/* --------------------------------------------------------------- echipa */
+
+.team {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.team li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: var(--radius-card-sm);
+  background: var(--surface);
+  padding: 1.1rem 0.75rem;
+  text-align: center;
+}
+
+.team__avatar { display: block; width: 2.75rem; height: 2.75rem; margin-bottom: 0.25rem; }
+.team__name { font-size: 0.88rem; font-weight: 600; }
+.team__role { font-size: 0.72rem; color: rgba(17, 17, 17, 0.5); }
+
+@media (min-width: 641px) {
+  .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .service-form { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .service-form__wide { grid-column: span 4; }
+  .team { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .agenda li { grid-template-columns: 4rem 10rem 1fr 1fr auto; }
+}

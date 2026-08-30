@@ -70,7 +70,9 @@ export async function getSalonBySlug(slug) {
     db.get('SELECT description, email FROM salons WHERE id = ?', [salon.id])
   ]);
 
-  return { ...salon, ...description, services, staff, hours };
+  // `reviews` din card este numarul de recenzii; il pastram separat,
+  // pentru ca ruta adauga peste el lista propriu-zisa de recenzii
+  return { ...salon, ...description, reviewCount: salon.reviews, services, staff, hours };
 }
 
 export async function getSalonById(id) {

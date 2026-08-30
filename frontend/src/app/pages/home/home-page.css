@@ -1,0 +1,341 @@
+/* --------------------------------------------------------------- hero */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 0 0 var(--radius-card) var(--radius-card);
+  background: #c9c9c9;
+  margin-top: -4.2rem;
+  padding-top: 4.2rem;
+}
+
+.hero__media { z-index: 0; }
+
+.hero__vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.1) 45%, rgba(255, 255, 255, 0.7)),
+    linear-gradient(100deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.6) 30%, rgba(255, 255, 255, 0) 62%);
+}
+
+.hero__content {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  padding-block: 5rem 5.5rem;
+}
+
+.hero__eyebrow { animation: hairit-fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both; }
+
+.hero__title {
+  max-width: 15ch;
+  font-size: 2.5rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.hero__line { display: block; overflow: hidden; }
+
+.hero__line > span {
+  display: block;
+  transform: translateY(105%);
+  opacity: 0;
+  animation: hero-line 0.9s cubic-bezier(0.215, 0.61, 0.355, 1) both;
+  animation-delay: var(--line-delay, 0ms);
+}
+
+@keyframes hero-line {
+  to { transform: none; opacity: 1; }
+}
+
+.hero__search {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 46rem;
+  border-radius: var(--radius-card-sm);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  padding: 0.5rem;
+  box-shadow: inset 0 0 0 1px rgba(230, 229, 226, 0.9), var(--shadow-lg);
+  animation: hairit-fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.55s both;
+}
+
+.hero__search-field {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex: 1;
+  min-width: 0;
+  border-radius: var(--radius-control);
+  background: #fff;
+  padding: 0.75rem 1rem;
+  color: rgba(17, 17, 17, 0.45);
+}
+
+.hero__search-field input,
+.hero__search-field select {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  outline: none;
+  font-size: 0.9rem;
+  color: var(--fg);
+}
+
+.hero__search-field input::-webkit-search-cancel-button { display: none; }
+.hero__search-field--city { flex: 0 0 auto; min-width: 11rem; }
+
+.hero__search-button {
+  justify-content: center;
+  padding: 0.85rem 2rem;
+}
+
+.hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  font-size: 0.8rem;
+  color: rgba(17, 17, 17, 0.6);
+  animation: hairit-fade-up 0.9s ease-out 0.75s both;
+}
+
+.hero__meta strong {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+/* ------------------------------------------------------- blocuri comune */
+
+.block-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.block-head .eyebrow { margin-bottom: 0.6rem; }
+.block-head--center { flex-direction: column; align-items: center; text-align: center; }
+
+/* ----------------------------------------------------------- categorii */
+
+.categories { padding-block: 4rem; }
+
+.categories__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.categories__grid a {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  height: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card-sm);
+  background: #fff;
+  padding: 1.25rem;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s ease, background 0.3s ease;
+}
+
+.categories__grid a:hover {
+  transform: translateY(-4px);
+  border-color: rgba(17, 17, 17, 0.2);
+  background: var(--surface);
+}
+
+.categories__icon {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: var(--radius-pill);
+  background: var(--ink);
+  color: var(--accent-from);
+  font-size: 1.1rem;
+}
+
+.categories__name { font-size: 0.95rem; font-weight: 500; }
+.categories__count { font-size: 0.75rem; color: rgba(17, 17, 17, 0.5); }
+
+/* ------------------------------------------------------------ saloane */
+
+.featured { padding-block: 2rem 4rem; }
+
+.featured__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+.featured__error {
+  border-radius: var(--radius-control);
+  background: var(--busy-soft);
+  padding: 0.9rem 1.1rem;
+  font-size: 0.85rem;
+  color: var(--busy);
+}
+
+/* --------------------------------------------------------------- pași */
+
+.steps { background: var(--surface); padding-block: 4rem; }
+
+.steps__list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.steps__list li {
+  position: relative;
+  border-radius: var(--radius-card);
+  background: #fff;
+  padding: 1.75rem;
+}
+
+.steps__index {
+  position: absolute;
+  right: 1.25rem;
+  top: 1.1rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--surface-2);
+}
+
+.steps__icon {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 1.2rem;
+}
+
+.steps__title {
+  margin-top: 1rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.steps__text {
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: rgba(17, 17, 17, 0.55);
+}
+
+/* -------------------------------------------------------------- orașe */
+
+.cities { padding-block: 4rem; }
+
+.cities__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.cities__list a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  padding: 0.6rem 1.1rem;
+  font-size: 0.85rem;
+  transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+}
+
+.cities__list a:hover {
+  border-color: rgba(17, 17, 17, 0.25);
+  background: var(--surface);
+  transform: translateY(-2px);
+}
+
+.cities__list hairit-icon { color: var(--accent); }
+
+.cities__list span {
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  padding: 0.1rem 0.5rem;
+  font-size: 0.7rem;
+  color: rgba(17, 17, 17, 0.55);
+}
+
+/* ------------------------------------------------- panou pentru saloane */
+
+.owner-cta { padding-block: 0 5rem; }
+
+.owner-cta__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  border-radius: var(--radius-card);
+  background: var(--ink);
+  padding: 3rem 1.75rem;
+  color: #fff;
+}
+
+.owner-cta__title {
+  margin-top: 0.75rem;
+  max-width: 20ch;
+  font-size: 1.875rem;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.owner-cta__text {
+  margin-top: 0.85rem;
+  max-width: 44ch;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.owner-cta__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.owner-cta__link {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.65);
+  text-decoration: underline;
+}
+
+/* ------------------------------------------------------------ ecrane mari */
+
+@media (min-width: 641px) {
+  .hero__title { font-size: 3.5rem; }
+  .hero__search { flex-direction: row; align-items: center; }
+  .categories__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .featured__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .steps__list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .owner-cta__panel { padding: 3.5rem 3rem; }
+}
+
+@media (min-width: 1025px) {
+  .hero__content { min-height: 38rem; justify-content: center; padding-block: 7rem 6rem; }
+  .hero__title { font-size: 4.25rem; }
+  .featured__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .owner-cta__panel { flex-direction: row; align-items: flex-end; justify-content: space-between; padding: 4rem; }
+  .owner-cta__actions { align-items: flex-end; }
+}

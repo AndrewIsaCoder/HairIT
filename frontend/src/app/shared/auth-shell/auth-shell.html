@@ -1,0 +1,26 @@
+<section class="auth">
+  <aside class="auth__aside">
+    <img [src]="image()" alt="" aria-hidden="true" />
+    <div class="auth__aside-body">
+      <a class="auth__brand" routerLink="/">
+        <hairit-icon name="spark" />
+        HairIT
+      </a>
+      <p class="auth__pitch">Programări la saloane, frizerii și studiouri de înfrumusețare din toată țara.</p>
+      <ul class="auth__points">
+        <li *ngFor="let point of points">
+          <hairit-icon name="check" />
+          {{ point }}
+        </li>
+      </ul>
+    </div>
+  </aside>
+
+  <div class="auth__form">
+    <div class="auth__form-inner">
+      <p class="eyebrow">{{ eyebrow() }}</p>
+      <h1 class="auth__title">{{ title() }}</h1>
+      <ng-content />
+    </div>
+  </div>
+</section>

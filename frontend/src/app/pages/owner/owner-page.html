@@ -1,0 +1,212 @@
+<section class="owner shell">
+  <header class="owner__head">
+    <div>
+      <p class="eyebrow">Panoul salonului</p>
+      <h1 class="owner__title">{{ store.current()?.name || 'Salonul meu' }}</h1>
+      <p class="owner__meta" *ngIf="store.current() as salon">
+        {{ salon.address }}, {{ salon.city }} · {{ salon.staff.length }} specialiști
+      </p>
+    </div>
+
+    <a class="pill pill--outline pill--arrow" *ngIf="store.current() as salon" [routerLink]="['/salon', salon.slug]">
+      Vezi pagina publică
+      <span class="pill__badge"><hairit-icon name="arrow-up-right" /></span>
+    </a>
+  </header>
+
+  <nav class="owner__salons" *ngIf="store.salons().length > 1">
+    <button
+      type="button"
+      *ngFor="let salon of store.salons()"
+      [ngClass]="{ 'is-active': selectedId() === salon.id }"
+      (click)="choose(salon.id)"
+    >
+      {{ salon.name }}
+    </button>
+  </nav>
+
+  <hairit-empty-state
+    *ngIf="!store.loading() && store.salons().length === 0"
+    icon="scissors"
+    title="Nu ai încă un salon"
+    text="Contul tău este marcat ca proprietar, dar niciun salon nu îți este atribuit."
+  />
+
+  <p class="form__success" *ngIf="store.message()">{{ store.message() }}</p>
+  <p class="form__error" *ngIf="store.error()">{{ store.error() }}</p>
+
+  <ng-container *ngIf="store.current() as salon">
+    <!-- ------------------------------------------------------------ cifre -->
+    <ul class="stats">
+      <li>
+        <span class="stats__value">{{ salon.stats.booked }}</span>
+        <span class="stats__label">Rezervări viitoare</span>
+      </li>
+      <li>
+        <span class="stats__value">{{ salon.stats.available }}</span>
+        <span class="stats__label">Intervale libere</span>
+      </li>
+      <li>
+        <span class="stats__value">{{ salon.stats.occupancy }}%</span>
+        <span class="stats__label">Grad de ocupare</span>
+      </li>
+      <li>
+        <span class="stats__value">{{ money(salon.stats.revenue) }}</span>
+        <span class="stats__label">Încasări estimate</span>
+      </li>
+    </ul>
+
+    <!-- ----------------------------------------------------------- agenda -->
+    <section class="block">
+      <header class="block__head">
+        <div>
+          <h2 class="block__title">Agenda zilei</h2>
+          <p class="block__text" *ngIf="store.date()">{{ longDate(store.date()) }}</p>
+        </div>
+
+        <div class="block__filters">
+          <button type="button" [ngClass]="{ 'is-active': !onlyBooked() }" (click)="onlyBooked.set(false)">
+            Toate <em>{{ store.slots().length }}</em>
+          </button>
+          <button type="button" [ngClass]="{ 'is-active': onlyBooked() }" (click)="onlyBooked.set(true)">
+            Rezervate <em>{{ bookedToday() }}</em>
+          </button>
+        </div>
+      </header>
+
+      <div class="days">
+        <button
+          type="button"
+          class="day"
+          *ngFor="let day of store.days()"
+          [ngClass]="{ 'is-active': day.date === store.date() }"
+          (click)="chooseDate(day.date)"
+        >
+          <span class="day__weekday">{{ weekdayShort(day.date) }}</span>
+          <span class="day__number">{{ dayNumber(day.date) }}</span>
+          <span class="day__month">{{ monthShort(day.date) }}</span>
+          <span class="day__booked">{{ day.booked }} rezervate</span>
+        </button>
+      </div>
+
+      <ul class="agenda" *ngIf="visibleSlots().length > 0; else emptyAgenda">
+        <li
+          *ngFor="let slot of visibleSlots()"
+          [ngClass]="{ 'is-booked': slot.status === 'booked', 'is-free': slot.status === 'available' }"
+        >
+          <span class="agenda__time">{{ slot.time }}</span>
+
+          <span class="agenda__staff">
+            <span class="agenda__avatar"><hairit-avatar [initials]="slot.staffInitials" [accent]="true" /></span>
+            {{ slot.staff }}
+          </span>
+
+          <span class="agenda__service">
+            {{ slot.service }}
+            <em>{{ slot.durationMin }} min · {{ money(slot.price) }}</em>
+          </span>
+
+          <span class="agenda__client" *ngIf="slot.status === 'booked'; else freeCell">
+            <strong>{{ slot.clientName }}</strong>
+            <em>{{ slot.phone }}</em>
+            <em class="agenda__notes" *ngIf="slot.notes">„{{ slot.notes }}”</em>
+          </span>
+
+          <ng-template #freeCell>
+            <span class="agenda__client agenda__client--free">Interval liber</span>
+          </ng-template>
+
+          <button
+            type="button"
+            class="agenda__cancel"
+            *ngIf="slot.status === 'booked'"
+            (click)="cancel(slot)"
+          >
+            Anulează
+          </button>
+        </li>
+      </ul>
+
+      <ng-template #emptyAgenda>
+        <p class="block__empty">Nu există intervale pentru ziua selectată.</p>
+      </ng-template>
+    </section>
+
+    <!-- --------------------------------------------------------- servicii -->
+    <section class="block">
+      <header class="block__head">
+        <div>
+          <h2 class="block__title">Servicii</h2>
+          <p class="block__text">{{ salon.services.length }} servicii în meniul salonului.</p>
+        </div>
+
+        <button type="button" class="pill pill--dark" (click)="showServiceForm.set(!showServiceForm())">
+          <hairit-icon name="plus" />
+          {{ showServiceForm() ? 'Renunță' : 'Adaugă serviciu' }}
+        </button>
+      </header>
+
+      <form class="service-form" *ngIf="showServiceForm()" [formGroup]="serviceForm" (ngSubmit)="addService()" novalidate>
+        <label class="field">
+          <span class="field__label">Denumire</span>
+          <input type="text" formControlName="name" placeholder="Tuns & Styling" />
+        </label>
+
+        <label class="field">
+          <span class="field__label">Categorie</span>
+          <input type="text" formControlName="category" placeholder="Păr" />
+        </label>
+
+        <label class="field">
+          <span class="field__label">Durată (minute)</span>
+          <input type="number" formControlName="durationMin" min="10" max="480" />
+        </label>
+
+        <label class="field">
+          <span class="field__label">Preț (lei)</span>
+          <input type="number" formControlName="price" min="0" />
+        </label>
+
+        <label class="field service-form__wide">
+          <span class="field__label">Descriere</span>
+          <input type="text" formControlName="description" placeholder="Ce include serviciul" />
+        </label>
+
+        <button type="submit" class="pill pill--dark service-form__submit" [disabled]="store.pending()">
+          {{ store.pending() ? 'Se salvează…' : 'Salvează serviciul' }}
+        </button>
+      </form>
+
+      <ul class="services">
+        <li *ngFor="let service of salon.services">
+          <span class="services__name">
+            {{ service.name }}
+            <em>{{ service.category }} · {{ service.durationMin }} min</em>
+          </span>
+          <span class="services__price">{{ money(service.price) }}</span>
+          <button type="button" class="services__remove" (click)="removeService(service.id)" aria-label="Șterge serviciul">
+            <hairit-icon name="trash" />
+          </button>
+        </li>
+      </ul>
+    </section>
+
+    <!-- --------------------------------------------------------- echipa -->
+    <section class="block">
+      <header class="block__head">
+        <div>
+          <h2 class="block__title">Echipa</h2>
+          <p class="block__text">Specialiștii care apar pe pagina publică.</p>
+        </div>
+      </header>
+
+      <ul class="team">
+        <li *ngFor="let member of salon.staff">
+          <span class="team__avatar"><hairit-avatar [initials]="member.initials" [accent]="true" /></span>
+          <span class="team__name">{{ member.name }}</span>
+          <span class="team__role">{{ member.role }}</span>
+        </li>
+      </ul>
+    </section>
+  </ng-container>
+</section>

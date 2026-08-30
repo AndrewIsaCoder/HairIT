@@ -204,6 +204,16 @@ export async function agenda(salonId, date) {
   return listSlots({ salonId, date });
 }
 
+/** Prima zi din viitor care are intervale; folosita cand nu se cere o data anume. */
+export async function firstAgendaDate(salonId) {
+  const db = await getDb();
+  const row = await db.get(
+    "SELECT MIN(date) AS date FROM appointments WHERE salon_id = ? AND date >= date('now')",
+    [Number(salonId)]
+  );
+  return row?.date ?? new Date().toISOString().slice(0, 10);
+}
+
 export async function salonStats(salonId) {
   const db = await getDb();
 

@@ -1,0 +1,71 @@
+<section class="results shell">
+  <header class="results__head">
+    <div>
+      <p class="eyebrow">Căutare</p>
+      <h1 class="results__title">
+        {{ category() || 'Saloane' }}<span *ngIf="city()"> în {{ city() }}</span>
+      </h1>
+      <p class="results__count" *ngIf="!store.loading()">
+        {{ store.resultCount() }}
+        {{ store.resultCount() === 1 ? 'salon găsit' : 'saloane găsite' }}
+        <span *ngIf="term()">pentru „{{ term() }}”</span>
+      </p>
+    </div>
+
+    <button type="button" class="pill pill--outline" *ngIf="hasFilters()" (click)="reset()">
+      Șterge filtrele
+    </button>
+  </header>
+
+  <form class="results__filters" (submit)="submit($event)">
+    <label class="results__field">
+      <hairit-icon name="search" />
+      <input
+        type="search"
+        [value]="term()"
+        (input)="onTerm($event)"
+        placeholder="Salon, serviciu sau oraș"
+        aria-label="Caută"
+      />
+    </label>
+
+    <label class="results__field results__field--select">
+      <hairit-icon name="map-pin" />
+      <select [value]="city()" (change)="onCity($event)" aria-label="Oraș">
+        <option value="">Toate orașele</option>
+        <option *ngFor="let item of cities()" [value]="item.city">{{ item.city }} ({{ item.salons }})</option>
+      </select>
+    </label>
+
+    <label class="results__field results__field--select">
+      <hairit-icon name="filter" />
+      <select [value]="category()" (change)="onCategory($event)" aria-label="Categorie">
+        <option value="">Toate categoriile</option>
+        <option *ngFor="let item of categories()" [value]="item.category">
+          {{ item.category }} ({{ item.salons }})
+        </option>
+      </select>
+    </label>
+
+    <button type="submit" class="pill pill--dark results__submit">Caută</button>
+  </form>
+
+  <p class="results__error" *ngIf="store.error()">{{ store.error() }}</p>
+
+  <p class="results__loading" *ngIf="store.loading()">Se încarcă saloanele…</p>
+
+  <ul class="results__grid" *ngIf="!store.loading() && store.salons().length > 0">
+    <li *ngFor="let salon of store.salons(); let i = index" [hairitReveal]="i * 50">
+      <hairit-salon-card [salon]="salon" (favoriteToggled)="toggleFavorite($event)" />
+    </li>
+  </ul>
+
+  <hairit-empty-state
+    *ngIf="!store.loading() && store.salons().length === 0 && !store.error()"
+    icon="search"
+    title="Niciun salon găsit"
+    text="Încearcă alt oraș, altă categorie sau un termen de căutare mai scurt."
+  >
+    <button type="button" class="pill pill--dark" (click)="reset()">Vezi toate saloanele</button>
+  </hairit-empty-state>
+</section>

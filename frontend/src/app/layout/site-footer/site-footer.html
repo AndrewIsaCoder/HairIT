@@ -1,0 +1,43 @@
+<div class="shell footer__inner">
+  <div class="footer__cta" hairitReveal>
+    <h2 class="footer__title">Găsește-ți salonul.<br />Rezervă în 30 de secunde.</h2>
+    <a class="pill pill--light pill--arrow pill--up" routerLink="/saloane">
+      Caută saloane
+      <span class="pill__badge"><hairit-icon name="arrow-up-right" /></span>
+    </a>
+  </div>
+
+  <div class="footer__columns">
+    <div class="footer__brand" hairitReveal>
+      <p class="footer__logo">
+        <hairit-icon name="spark" />
+        HairIT
+      </p>
+      <p class="footer__tagline">
+        Platformă de programări la saloane, frizerii și studiouri de înfrumusețare din România.
+        Alegi serviciul, specialistul și ora — restul se rezolvă singur.
+      </p>
+    </div>
+
+    <div class="footer__column" *ngFor="let column of columns; let i = index" [hairitReveal]="i * 80">
+      <p class="footer__column-title">{{ column.title }}</p>
+      <ul>
+        <li *ngFor="let link of column.links">
+          <a *ngIf="link.href" [href]="link.href">{{ link.label }}</a>
+          <a *ngIf="link.path" [routerLink]="link.path">{{ link.label }}</a>
+          <span *ngIf="!link.href && !link.path">{{ link.label }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer__legal">
+    <span>© {{ year }} HairIT. Toate drepturile rezervate.</span>
+    <span class="footer__legal-links">
+      <a routerLink="/">Confidențialitate</a>
+      <a routerLink="/">Termeni</a>
+    </span>
+  </div>
+</div>
+
+<p class="footer__watermark watermark" aria-hidden="true">HAIRIT</p>

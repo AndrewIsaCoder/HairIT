@@ -73,6 +73,33 @@ const ICONS = {
     shapes: [path('M12 21.2s7-5.7 7-11.2a7 7 0 1 0-14 0c0 5.5 7 11.2 7 11.2z'), circle(12, 10, 2.6)]
   },
   'circle-dot': { box: 24, stroked: true, strokeWidth: 1.6, shapes: [circle(12, 12, 9), circle(12, 12, 3.2, true)] },
+  heart: {
+    box: 24,
+    stroked: true,
+    strokeWidth: 1.7,
+    shapes: [path('M12 20.4S4.2 15.6 4.2 10.3A4.3 4.3 0 0 1 12 7.5a4.3 4.3 0 0 1 7.8 2.8c0 5.3-7.8 10.1-7.8 10.1z')]
+  },
+  'heart-filled': {
+    box: 24,
+    stroked: false,
+    shapes: [path('M12 20.4S4.2 15.6 4.2 10.3A4.3 4.3 0 0 1 12 7.5a4.3 4.3 0 0 1 7.8 2.8c0 5.3-7.8 10.1-7.8 10.1z')]
+  },
+  search: { box: 24, stroked: true, strokeWidth: 1.8, shapes: [circle(11, 11, 7), path('M20 20l-3.6-3.6')] },
+  bell: {
+    box: 24,
+    stroked: true,
+    strokeWidth: 1.6,
+    shapes: [path('M6 9.5a6 6 0 1 1 12 0c0 3.6 1.4 5 1.4 5H4.6s1.4-1.4 1.4-5z'), path('M10 18.6a2 2 0 0 0 4 0')]
+  },
+  logout: { box: 24, stroked: true, strokeWidth: 1.7, shapes: [path('M15 17l5-5-5-5M20 12H9M12 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h6')] },
+  'chevron-down': { box: 24, stroked: true, strokeWidth: 2, shapes: [path('M6 9.5l6 6 6-6')] },
+  plus: { box: 24, stroked: true, strokeWidth: 2, shapes: [path('M12 5v14M5 12h14')] },
+  trash: { box: 24, stroked: true, strokeWidth: 1.7, shapes: [path('M4 7h16M9.5 7V4.8h5V7M6.5 7l1 13h9l1-13')] },
+  edit: { box: 24, stroked: true, strokeWidth: 1.7, shapes: [path('M4 20h4L18.5 9.5l-4-4L4 16v4z')] },
+  filter: { box: 24, stroked: true, strokeWidth: 1.7, shapes: [path('M3.5 5.5h17l-6.8 8v5.2l-3.4 1.8v-7z')] },
+  sparkles: { box: 24, stroked: true, strokeWidth: 1.6, shapes: [path('M12 3.5l1.6 4.3 4.3 1.6-4.3 1.6L12 15.3l-1.6-4.3L6.1 9.4l4.3-1.6z'), path('M18.5 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z')] },
+  info: { box: 24, stroked: true, strokeWidth: 1.6, shapes: [circle(12, 12, 9), path('M12 11v5.5M12 7.6v.1')] },
+  wallet: { box: 24, stroked: true, strokeWidth: 1.6, shapes: [path('M4 8.5A2 2 0 0 1 6 6.5h11a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z'), path('M16 12.5h3.5v3H16a1.5 1.5 0 0 1 0-3z')] },
   globe: {
     box: 24,
     stroked: true,

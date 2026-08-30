@@ -1,0 +1,163 @@
+<!-- ----------------------------------------------------------- hero -->
+<section class="hero" id="acasa">
+  <hairit-liquid-reveal
+    class="hero__media"
+    base="images/hero-primary.jpg"
+    reveal="images/hero-reveal.jpg"
+    alt="Saloane din platforma HairIT"
+  />
+  <div class="hero__vignette" aria-hidden="true"></div>
+
+  <div class="hero__content shell">
+    <p class="eyebrow hero__eyebrow">Programări online la saloane din toată țara</p>
+
+    <h1 class="hero__title">
+      <span class="hero__line" *ngFor="let line of headline; let i = index" [style.--line-delay.ms]="200 + i * 110">
+        <span>{{ line }}</span>
+      </span>
+    </h1>
+
+    <form class="hero__search" (submit)="search($event)">
+      <label class="hero__search-field">
+        <hairit-icon name="search" />
+        <input
+          type="search"
+          [value]="term()"
+          (input)="onTerm($event)"
+          placeholder="Tuns, balayage, manichiură, barbershop…"
+          aria-label="Ce serviciu cauți"
+        />
+      </label>
+
+      <label class="hero__search-field hero__search-field--city">
+        <hairit-icon name="map-pin" />
+        <select [value]="city()" (change)="onCity($event)" aria-label="Oraș">
+          <option value="">Toate orașele</option>
+          <option *ngFor="let item of cities()" [value]="item.city">{{ item.city }}</option>
+        </select>
+      </label>
+
+      <button type="submit" class="pill pill--dark hero__search-button">Caută</button>
+    </form>
+
+    <div class="hero__meta" *ngIf="stats() as s">
+      <span><strong>{{ s.salons }}</strong> saloane</span>
+      <span><strong>{{ s.specialists }}</strong> specialiști</span>
+      <span><strong>{{ s.freeSlots }}</strong> intervale libere</span>
+    </div>
+  </div>
+</section>
+
+<!-- ------------------------------------------------------ categorii -->
+<section class="section categories">
+  <div class="shell">
+    <header class="block-head" hairitReveal>
+      <div>
+        <p class="eyebrow">Categorii</p>
+        <h2 class="section-title">Ce fel de salon cauți?</h2>
+      </div>
+      <a class="pill pill--outline" routerLink="/saloane">Vezi toate</a>
+    </header>
+
+    <ul class="categories__grid">
+      <li *ngFor="let item of categories(); let i = index" [hairitReveal]="i * 70">
+        <a [routerLink]="['/saloane']" [queryParams]="{ category: item.category }">
+          <span class="categories__icon"><hairit-icon [name]="categoryIcon(item.category)" /></span>
+          <span class="categories__name">{{ item.category }}</span>
+          <span class="categories__count">{{ item.salons }} saloane</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- --------------------------------------------------------- saloane -->
+<section class="section featured">
+  <div class="shell">
+    <header class="block-head" hairitReveal>
+      <div>
+        <p class="eyebrow">Recomandate</p>
+        <h2 class="section-title">Cele mai bine cotate saloane</h2>
+      </div>
+      <a class="pill pill--outline pill--arrow" routerLink="/saloane">
+        Toate saloanele
+        <span class="pill__badge"><hairit-icon name="arrow-right" /></span>
+      </a>
+    </header>
+
+    <p class="featured__error" *ngIf="store.error()">{{ store.error() }}</p>
+
+    <ul class="featured__grid">
+      <li *ngFor="let salon of featured(); let i = index" [hairitReveal]="i * 70">
+        <hairit-salon-card [salon]="salon" (favoriteToggled)="toggleFavorite($event)" />
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ------------------------------------------------------- cum merge -->
+<section class="section steps">
+  <div class="shell">
+    <header class="block-head block-head--center" hairitReveal>
+      <div>
+        <p class="eyebrow eyebrow--boxed">Cum funcționează</p>
+        <h2 class="section-title">Trei pași până la programare</h2>
+      </div>
+    </header>
+
+    <ol class="steps__list">
+      <li *ngFor="let step of steps; let i = index" [hairitReveal]="i * 90">
+        <span class="steps__index">0{{ i + 1 }}</span>
+        <span class="steps__icon"><hairit-icon [name]="step.icon" /></span>
+        <h3 class="steps__title">{{ step.title }}</h3>
+        <p class="steps__text">{{ step.text }}</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ----------------------------------------------------------- orașe -->
+<section class="section cities">
+  <div class="shell">
+    <header class="block-head" hairitReveal>
+      <div>
+        <p class="eyebrow">Orașe</p>
+        <h2 class="section-title">Unde suntem prezenți</h2>
+      </div>
+    </header>
+
+    <ul class="cities__list" hairitReveal="80">
+      <li *ngFor="let item of cities()">
+        <a [routerLink]="['/saloane']" [queryParams]="{ city: item.city }">
+          <hairit-icon name="map-pin" />
+          {{ item.city }}
+          <span>{{ item.salons }}</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ------------------------------------------------- panou proprietar -->
+<section class="section owner-cta">
+  <div class="shell">
+    <div class="owner-cta__panel" hairitReveal>
+      <div>
+        <p class="eyebrow eyebrow--light">Pentru saloane</p>
+        <h2 class="owner-cta__title">Îți administrezi agenda dintr-un singur loc.</h2>
+        <p class="owner-cta__text">
+          Adaugi serviciile, vezi agenda zilei pe fiecare specialist și primești rezervările direct în
+          platformă, fără telefoane și fără caiet.
+        </p>
+      </div>
+
+      <div class="owner-cta__actions">
+        <a class="pill pill--light pill--arrow pill--up" routerLink="/inregistrare">
+          Înscrie-ți salonul
+          <span class="pill__badge"><hairit-icon name="arrow-up-right" /></span>
+        </a>
+        <a class="owner-cta__link" *ngIf="auth.isOwner()" routerLink="/salonul-meu">Mergi la panoul salonului</a>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,59 @@
+<hairit-auth-shell eyebrow="Cont nou" title="Creează-ți contul" image="images/salon-barber.jpg">
+  <div class="register__roles">
+    <button type="button" [class.is-active]="role() === 'client'" (click)="role.set('client')">
+      <hairit-icon name="user" />
+      <strong>Sunt client</strong>
+      <span>Rezerv la saloane</span>
+    </button>
+    <button type="button" [class.is-active]="role() === 'owner'" (click)="role.set('owner')">
+      <hairit-icon name="scissors" />
+      <strong>Am un salon</strong>
+      <span>Îmi administrez agenda</span>
+    </button>
+  </div>
+
+  <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <p class="form__error" *ngIf="auth.error()">{{ auth.error() }}</p>
+
+    <label class="field" [class.is-invalid]="invalid('fullName')">
+      <span class="field__label">Nume complet</span>
+      <input type="text" formControlName="fullName" placeholder="Ana Petrescu" autocomplete="name" />
+      <span class="field__error" *ngIf="invalid('fullName')">
+        {{ serverError('fullName') || 'Numele trebuie să aibă minim 3 caractere.' }}
+      </span>
+    </label>
+
+    <label class="field" [class.is-invalid]="invalid('email')">
+      <span class="field__label">Email</span>
+      <input type="email" formControlName="email" placeholder="tu@exemplu.ro" autocomplete="email" />
+      <span class="field__error" *ngIf="invalid('email')">
+        {{ serverError('email') || 'Introdu o adresă de email validă.' }}
+      </span>
+    </label>
+
+    <label class="field" [class.is-invalid]="invalid('phone')">
+      <span class="field__label">Telefon</span>
+      <input type="tel" formControlName="phone" placeholder="+40 7xx xxx xxx" autocomplete="tel" />
+      <span class="field__error" *ngIf="invalid('phone')">
+        {{ serverError('phone') || 'Introdu un număr de telefon valid.' }}
+      </span>
+    </label>
+
+    <label class="field" [class.is-invalid]="invalid('password')">
+      <span class="field__label">Parolă</span>
+      <input type="password" formControlName="password" placeholder="Minim 8 caractere" autocomplete="new-password" />
+      <span class="field__error" *ngIf="invalid('password')">
+        {{ serverError('password') || 'Parola trebuie să aibă minim 8 caractere.' }}
+      </span>
+    </label>
+
+    <button type="submit" class="pill pill--dark pill--arrow register__submit" [disabled]="auth.pending()">
+      {{ auth.pending() ? 'Se creează…' : 'Creează contul' }}
+      <span class="pill__badge"><hairit-icon name="arrow-right" /></span>
+    </button>
+
+    <p class="form__hint">
+      Ai deja cont? <a routerLink="/autentificare">Autentifică-te</a>.
+    </p>
+  </form>
+</hairit-auth-shell>

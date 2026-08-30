@@ -1,0 +1,40 @@
+.register__roles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+}
+
+.register__roles button {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card-sm);
+  background: #fff;
+  padding: 0.9rem;
+  text-align: left;
+  transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+}
+
+.register__roles button:hover { transform: translateY(-2px); }
+
+.register__roles button.is-active {
+  border-color: var(--ink);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.register__roles hairit-icon {
+  font-size: 1.1rem;
+  color: var(--accent);
+  margin-bottom: 0.2rem;
+}
+
+.register__roles strong { font-size: 0.85rem; font-weight: 600; }
+.register__roles span { font-size: 0.72rem; color: rgba(17, 17, 17, 0.5); }
+
+.register__submit {
+  align-self: flex-start;
+  margin-top: 0.25rem;
+}

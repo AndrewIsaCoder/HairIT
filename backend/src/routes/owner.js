@@ -12,7 +12,7 @@ import {
   deleteService,
   serviceSalonId
 } from '../lib/repositories/salons.js';
-import { agenda, salonStats, listDays } from '../lib/repositories/appointments.js';
+import { agenda, salonStats, listDays, firstAgendaDate } from '../lib/repositories/appointments.js';
 
 export const owner = Router();
 
@@ -52,12 +52,15 @@ owner.get(
   '/salons/:salonId/agenda',
   guard,
   route(async (req, res) => {
-    const date = String(req.query.date ?? '').trim() || new Date().toISOString().slice(0, 10);
-    if (!DATE_PATTERN.test(date)) {
+    const salonId = Number(req.params.salonId);
+    const requested = String(req.query.date ?? '').trim();
+
+    if (requested && !DATE_PATTERN.test(requested)) {
       return res.status(400).json({ message: 'Data trebuie să fie de forma YYYY-MM-DD.' });
     }
 
-    const salonId = Number(req.params.salonId);
+    // fara data explicita deschidem prima zi care are intervale
+    const date = requested || (await firstAgendaDate(salonId));
     const [slots, days] = await Promise.all([agenda(salonId, date), listDays(salonId)]);
     res.json({ date, slots, days });
   })

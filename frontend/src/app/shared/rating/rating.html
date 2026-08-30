@@ -1,0 +1,18 @@
+<span class="rating" [ngClass]="{ 'rating--compact': compact() }">
+  <span class="rating__stars">
+    <button
+      *ngFor="let star of stars"
+      type="button"
+      class="rating__star"
+      [ngClass]="{ 'is-on': star <= rounded(), 'is-static': !editable() }"
+      [disabled]="!editable()"
+      (click)="changed.emit(star)"
+      [attr.aria-label]="star + ' din 5'"
+    >
+      <hairit-icon name="star" />
+    </button>
+  </span>
+
+  <span class="rating__value" *ngIf="!editable()">{{ label() }}</span>
+  <span class="rating__count" *ngIf="!editable() && count() !== null">({{ count() }})</span>
+</span>

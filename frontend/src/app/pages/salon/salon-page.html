@@ -1,0 +1,390 @@
+<p class="salon__loading" *ngIf="loading()">Se încarcă salonul…</p>
+
+<hairit-empty-state
+  *ngIf="notFound()"
+  icon="search"
+  title="Salonul nu există"
+  text="Poate a fost șters sau adresa este greșită."
+>
+  <a class="pill pill--dark" routerLink="/saloane">Vezi toate saloanele</a>
+</hairit-empty-state>
+
+<ng-container *ngIf="salon() as s">
+  <!-- ------------------------------------------------------------ antet -->
+  <header class="salon__hero">
+    <img class="salon__cover" [src]="s.coverImage" [alt]="s.name" />
+    <div class="salon__hero-shade" aria-hidden="true"></div>
+
+    <div class="salon__hero-body shell">
+      <span class="salon__category">{{ s.category }}</span>
+      <h1 class="salon__name">{{ s.name }}</h1>
+      <p class="salon__tagline">{{ s.tagline }}</p>
+
+      <div class="salon__facts">
+        <hairit-rating [value]="s.rating" [count]="s.reviewCount" />
+        <span><hairit-icon name="map-pin" /> {{ s.address }}, {{ s.city }}</span>
+        <span><hairit-icon name="phone" /> {{ s.phone }}</span>
+        <span class="salon__free"><hairit-icon name="clock" /> {{ s.freeSlots }} intervale libere</span>
+      </div>
+
+      <button type="button" class="salon__favorite" [class.is-on]="s.isFavorite" (click)="toggleFavorite()">
+        <hairit-icon [name]="s.isFavorite ? 'heart-filled' : 'heart'" />
+        {{ s.isFavorite ? 'La favorite' : 'Adaugă la favorite' }}
+      </button>
+    </div>
+  </header>
+
+  <div class="salon__layout shell">
+    <!-- ------------------------------------------------------- conținut -->
+    <div class="salon__main">
+      <!-- pasul 1: serviciul -->
+      <section class="step" id="rezervare" hairitReveal>
+        <header class="step__head">
+          <span class="step__index">01</span>
+          <div>
+            <h2 class="step__title">Alege serviciul</h2>
+            <p class="step__text">Prețurile includ produsele folosite în salon.</p>
+          </div>
+        </header>
+
+        <ul class="services">
+          <li>
+            <button
+              type="button"
+              class="services__item services__item--all"
+              [ngClass]="{ 'is-active': selectedService() === null }"
+              (click)="chooseService(null)"
+            >
+              <span class="services__name">Toate serviciile</span>
+              <span class="services__meta">Vezi toate intervalele salonului</span>
+            </button>
+          </li>
+
+          <li *ngFor="let service of s.services">
+            <button
+              type="button"
+              class="services__item"
+              [ngClass]="{ 'is-active': selectedService()?.id === service.id }"
+              (click)="chooseService(service)"
+            >
+              <span class="services__top">
+                <span class="services__name">{{ service.name }}</span>
+                <span class="services__price">{{ money(service.price) }}</span>
+              </span>
+              <span class="services__meta">{{ service.category }} · {{ duration(service.durationMin) }}</span>
+              <span class="services__description">{{ service.description }}</span>
+            </button>
+          </li>
+        </ul>
+      </section>
+
+      <!-- pasul 2: specialistul -->
+      <section class="step" [hairitReveal]="60">
+        <header class="step__head">
+          <span class="step__index">02</span>
+          <div>
+            <h2 class="step__title">Alege specialistul</h2>
+            <p class="step__text">Poți lăsa salonul să aleagă persoana disponibilă.</p>
+          </div>
+        </header>
+
+        <ul class="staff">
+          <li>
+            <button
+              type="button"
+              class="staff__item"
+              [ngClass]="{ 'is-active': selectedStaffId() === null }"
+              (click)="chooseStaff(null)"
+            >
+              <span class="staff__avatar staff__avatar--any"><hairit-icon name="sparkles" /></span>
+              <span class="staff__name">Oricine</span>
+              <span class="staff__role">Primul disponibil</span>
+            </button>
+          </li>
+
+          <li *ngFor="let member of staffList()">
+            <button
+              type="button"
+              class="staff__item"
+              [ngClass]="{ 'is-active': selectedStaffId() === member.id }"
+              (click)="chooseStaff(member.id)"
+            >
+              <span class="staff__avatar"><hairit-avatar [initials]="member.initials" [accent]="true" /></span>
+              <span class="staff__name">{{ member.name }}</span>
+              <span class="staff__role">{{ member.role }}</span>
+            </button>
+          </li>
+        </ul>
+      </section>
+
+      <!-- pasul 3: ziua și ora -->
+      <section class="step" [hairitReveal]="120">
+        <header class="step__head">
+          <span class="step__index">03</span>
+          <div>
+            <h2 class="step__title">Alege ziua și ora</h2>
+            <p class="step__text" *ngIf="selectedDate()">{{ longDate(selectedDate()) }}</p>
+          </div>
+        </header>
+
+        <div class="days" *ngIf="days().length > 0; else noDays">
+          <button
+            type="button"
+            class="day"
+            *ngFor="let day of days()"
+            [ngClass]="{ 'is-active': day.date === selectedDate(), 'is-full': day.available === 0 }"
+            (click)="chooseDate(day.date)"
+          >
+            <span class="day__weekday">{{ weekdayShort(day.date) }}</span>
+            <span class="day__number">{{ dayNumber(day.date) }}</span>
+            <span class="day__month">{{ monthShort(day.date) }}</span>
+            <span class="day__free">{{ day.available }} libere</span>
+          </button>
+        </div>
+
+        <ng-template #noDays>
+          <p class="step__empty">
+            Nu există intervale pentru filtrele alese. Încearcă alt serviciu sau alt specialist.
+          </p>
+        </ng-template>
+
+        <div class="slots__toolbar" *ngIf="days().length > 0">
+          <div class="slots__filters">
+            <button type="button" [ngClass]="{ 'is-active': onlyFree() }" (click)="toggleFree(true)">
+              Doar libere <em>{{ freeCount() }}</em>
+            </button>
+            <button type="button" [ngClass]="{ 'is-active': !onlyFree() }" (click)="toggleFree(false)">
+              Toate <em>{{ freeCount() + bookedCount() }}</em>
+            </button>
+          </div>
+
+          <ul class="slots__legend">
+            <li><i class="dot dot--free"></i> Liber</li>
+            <li><i class="dot dot--busy"></i> Ocupat</li>
+          </ul>
+        </div>
+
+        <p class="step__empty" *ngIf="slotsLoading()">Se încarcă intervalele…</p>
+
+        <ul class="slots" *ngIf="!slotsLoading() && visibleSlots().length > 0">
+          <li *ngFor="let slot of visibleSlots()">
+            <button
+              type="button"
+              class="slot"
+              [ngClass]="{
+                'slot--available': slot.status === 'available',
+                'slot--booked': slot.status !== 'available',
+                'is-selected': selectedSlot()?.id === slot.id
+              }"
+              (click)="chooseSlot(slot)"
+            >
+              <span class="slot__time">{{ slot.time }}</span>
+              <span class="slot__body">
+                <span class="slot__service">{{ slot.service }}</span>
+                <span class="slot__staff">{{ slot.staff }} · {{ money(slot.price) }}</span>
+              </span>
+              <span class="slot__status">{{ slot.status === 'available' ? 'Liber' : 'Ocupat' }}</span>
+            </button>
+          </li>
+        </ul>
+
+        <p class="step__empty" *ngIf="!slotsLoading() && visibleSlots().length === 0 && days().length > 0">
+          Nu mai sunt intervale în ziua aceasta. Alege altă zi din calendar.
+        </p>
+      </section>
+
+      <!-- echipa -->
+      <section class="step" [hairitReveal]="160">
+        <header class="step__head">
+          <span class="step__index"><hairit-icon name="user" /></span>
+          <div>
+            <h2 class="step__title">Echipa</h2>
+            <p class="step__text">{{ s.staff.length }} specialiști în acest salon.</p>
+          </div>
+        </header>
+
+        <ul class="team">
+          <li *ngFor="let member of s.staff">
+            <span class="team__avatar"><hairit-avatar [initials]="member.initials" [accent]="true" /></span>
+            <span class="team__name">{{ member.name }}</span>
+            <span class="team__role">{{ member.role }}</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- despre + program -->
+      <section class="step" [hairitReveal]="180">
+        <header class="step__head">
+          <span class="step__index"><hairit-icon name="info" /></span>
+          <div>
+            <h2 class="step__title">Despre salon</h2>
+          </div>
+        </header>
+
+        <p class="salon__description">{{ s.description }}</p>
+
+        <ul class="hours">
+          <li *ngFor="let hour of s.hours" [class.is-closed]="hour.closed">
+            <span>{{ weekdays[hour.weekday] }}</span>
+            <span>{{ hour.closed ? 'Închis' : hour.opens + ' – ' + hour.closes }}</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- recenzii -->
+      <section class="step" [hairitReveal]="200">
+        <header class="step__head">
+          <span class="step__index"><hairit-icon name="star" /></span>
+          <div>
+            <h2 class="step__title">Recenzii</h2>
+            <p class="step__text">{{ s.reviewCount }} păreri, medie {{ s.rating || '—' }}.</p>
+          </div>
+        </header>
+
+        <div class="review-form" *ngIf="s.canReview">
+          <p class="review-form__title">{{ s.myReview ? 'Îți actualizezi recenzia' : 'Lasă o recenzie' }}</p>
+          <hairit-rating [value]="reviewRating()" [editable]="true" (changed)="reviewRating.set($event)" />
+
+          <form class="form" [formGroup]="reviewForm" (ngSubmit)="saveReview()">
+            <label class="field">
+              <span class="field__label">Comentariu (opțional)</span>
+              <textarea rows="3" formControlName="comment" placeholder="Cum a fost experiența ta?"></textarea>
+            </label>
+            <button type="submit" class="pill pill--dark review-form__submit" [disabled]="account.pending()">
+              {{ account.pending() ? 'Se salvează…' : 'Trimite recenzia' }}
+            </button>
+          </form>
+
+          <p class="form__success" *ngIf="reviewSaved()">Îți mulțumim! Recenzia ta a fost publicată.</p>
+        </div>
+
+        <p class="review-hint" *ngIf="!s.canReview && auth.isLoggedIn()">
+          Poți lăsa o recenzie după prima programare la acest salon.
+        </p>
+
+        <ul class="reviews" *ngIf="s.reviews.length > 0; else noReviews">
+          <li *ngFor="let review of s.reviews">
+            <div class="reviews__head">
+              <span class="reviews__author">
+                <hairit-avatar [name]="review.author" />
+                {{ review.author }}
+              </span>
+              <hairit-rating [value]="review.rating" [compact]="true" />
+            </div>
+            <p class="reviews__comment" *ngIf="review.comment">{{ review.comment }}</p>
+            <p class="reviews__time">{{ relative(review.createdAt) }}</p>
+          </li>
+        </ul>
+
+        <ng-template #noReviews>
+          <p class="step__empty">Încă nu există recenzii pentru acest salon.</p>
+        </ng-template>
+      </section>
+    </div>
+
+    <!-- --------------------------------------------------- rezumat lipit -->
+    <aside class="salon__aside">
+      <div class="summary">
+        <p class="summary__eyebrow">Rezumatul programării</p>
+
+        <ng-container *ngIf="confirmed() as done; else summaryForm">
+          <div class="summary__done">
+            <span class="summary__check"><hairit-icon name="check" /></span>
+            <h3 class="summary__title">Programare confirmată</h3>
+            <p class="summary__text">
+              {{ done.service }} la {{ done.salonName }}, {{ longDate(done.date) }}, ora {{ done.time }}.
+            </p>
+            <a class="pill pill--dark pill--arrow" routerLink="/contul-meu">
+              Vezi programările mele
+              <span class="pill__badge"><hairit-icon name="arrow-right" /></span>
+            </a>
+          </div>
+        </ng-container>
+
+        <ng-template #summaryForm>
+          <dl class="summary__list">
+            <div>
+              <dt>Serviciu</dt>
+              <dd>{{ selectedService()?.name || 'Toate serviciile' }}</dd>
+            </div>
+            <div>
+              <dt>Specialist</dt>
+              <dd>{{ staffName(selectedStaffId()) }}</dd>
+            </div>
+            <div>
+              <dt>Data</dt>
+              <dd>{{ selectedDate() ? longDate(selectedDate()) : '—' }}</dd>
+            </div>
+            <div>
+              <dt>Ora</dt>
+              <dd>{{ selectedSlot()?.time || '—' }}</dd>
+            </div>
+            <div class="summary__total" *ngIf="selectedSlot() as slot">
+              <dt>Total</dt>
+              <dd>{{ money(slot.price) }}</dd>
+            </div>
+          </dl>
+
+          <p class="summary__hint" *ngIf="!selectedSlot()">
+            Alege un interval liber din calendar ca să continui.
+          </p>
+
+          <p class="form__notice" *ngIf="selectedSlot() && !canBook()">
+            Intervalul de la ora {{ selectedSlot()?.time }} este deja rezervat. Alege unul marcat cu verde.
+          </p>
+
+          <div class="summary__guest" *ngIf="canBook() && !auth.isLoggedIn()">
+            <p>Ai nevoie de cont ca să rezervi.</p>
+            <a
+              class="pill pill--dark"
+              [routerLink]="['/autentificare']"
+              [queryParams]="{ redirect: '/salon/' + s.slug }"
+            >
+              Autentifică-te
+            </a>
+            <a class="summary__link" routerLink="/inregistrare">sau creează un cont nou</a>
+          </div>
+
+          <form
+            class="form summary__form"
+            *ngIf="canBook() && auth.isLoggedIn()"
+            [formGroup]="form"
+            (ngSubmit)="book()"
+            novalidate
+          >
+            <p class="form__error" *ngIf="account.error()">{{ account.error() }}</p>
+
+            <label class="field" [class.is-invalid]="invalid('clientName')">
+              <span class="field__label">Nume</span>
+              <input type="text" formControlName="clientName" autocomplete="name" />
+              <span class="field__error" *ngIf="invalid('clientName')">Numele trebuie să aibă minim 3 caractere.</span>
+            </label>
+
+            <label class="field" [class.is-invalid]="invalid('phone')">
+              <span class="field__label">Telefon</span>
+              <input type="tel" formControlName="phone" autocomplete="tel" />
+              <span class="field__error" *ngIf="invalid('phone')">Introdu un număr de telefon valid.</span>
+            </label>
+
+            <label class="field">
+              <span class="field__label">Mențiuni (opțional)</span>
+              <textarea rows="2" formControlName="notes" placeholder="Preferințe, detalii utile."></textarea>
+            </label>
+
+            <button type="submit" class="pill pill--dark pill--arrow" [disabled]="account.pending()">
+              {{ account.pending() ? 'Se rezervă…' : 'Confirmă programarea' }}
+              <span class="pill__badge"><hairit-icon name="arrow-right" /></span>
+            </button>
+          </form>
+        </ng-template>
+      </div>
+
+      <div class="contact-card">
+        <p class="contact-card__title">Contact</p>
+        <p><hairit-icon name="map-pin" /> {{ s.address }}, {{ s.city }}</p>
+        <p><hairit-icon name="phone" /> {{ s.phone }}</p>
+        <p><hairit-icon name="info" /> {{ s.email }}</p>
+      </div>
+    </aside>
+  </div>
+</ng-container>

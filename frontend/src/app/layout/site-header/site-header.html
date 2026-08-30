@@ -1,0 +1,79 @@
+<div class="header__inner shell">
+  <a class="header__brand" routerLink="/">
+    <hairit-icon name="spark" class="header__spark" />
+    <span>HairIT</span>
+  </a>
+
+  <form class="header__search" (submit)="submitSearch($event)" role="search">
+    <hairit-icon name="search" />
+    <input
+      type="search"
+      [value]="search()"
+      (input)="onSearchInput($event)"
+      placeholder="Caută salon, serviciu sau oraș"
+      aria-label="Caută saloane"
+    />
+  </form>
+
+  <nav class="header__nav" aria-label="Navigare principală">
+    <a routerLink="/" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }">Acasă</a>
+    <a routerLink="/saloane" routerLinkActive="is-active">Saloane</a>
+    <a *ngIf="auth.isOwner()" routerLink="/salonul-meu" routerLinkActive="is-active">Salonul meu</a>
+  </nav>
+
+  <div class="header__actions">
+    <ng-container *ngIf="auth.isLoggedIn(); else guestActions">
+      <div class="header__bell-wrap">
+        <button type="button" class="header__icon-button" (click)="toggleBell()" aria-label="Notificări">
+          <hairit-icon name="bell" />
+          <span class="header__badge" *ngIf="account.unread() > 0">{{ account.unread() }}</span>
+        </button>
+
+        <div class="panel panel--bell" *ngIf="bellOpen()">
+          <header class="panel__head">
+            <span>Notificări</span>
+            <button type="button" *ngIf="account.unread() > 0" (click)="markAllRead()">Marchează tot ca citit</button>
+          </header>
+
+          <ul class="panel__list" *ngIf="notifications().length > 0; else noNotifications">
+            <li *ngFor="let item of notifications()" [class.is-unread]="!item.isRead">
+              <p class="panel__title">{{ item.title }}</p>
+              <p class="panel__body">{{ item.body }}</p>
+              <p class="panel__time">{{ relative(item.createdAt) }}</p>
+            </li>
+          </ul>
+
+          <ng-template #noNotifications>
+            <p class="panel__empty">Nu ai notificări deocamdată.</p>
+          </ng-template>
+
+          <a class="panel__all" routerLink="/contul-meu" [queryParams]="{ tab: 'notificari' }">Vezi toate</a>
+        </div>
+      </div>
+
+      <div class="header__menu-wrap">
+        <button type="button" class="header__user" (click)="toggleMenu()">
+          <span class="header__avatar"><hairit-avatar [initials]="auth.initials()" [accent]="true" /></span>
+          <span class="header__user-name">{{ auth.user()?.fullName }}</span>
+          <hairit-icon name="chevron-down" [ngClass]="{ 'is-open': menuOpen() }" />
+        </button>
+
+        <div class="panel panel--menu" *ngIf="menuOpen()">
+          <a routerLink="/contul-meu"><hairit-icon name="user" /> Contul meu</a>
+          <a routerLink="/contul-meu" [queryParams]="{ tab: 'favorite' }"><hairit-icon name="heart" /> Favorite</a>
+          <a *ngIf="auth.isOwner()" routerLink="/salonul-meu"><hairit-icon name="scissors" /> Salonul meu</a>
+          <button type="button" (click)="logout()"><hairit-icon name="logout" /> Deconectare</button>
+        </div>
+      </div>
+    </ng-container>
+
+    <button type="button" class="header__burger" (click)="ui.openMenu()" aria-label="Deschide meniul">
+      <hairit-icon name="menu" />
+    </button>
+
+    <ng-template #guestActions>
+      <a class="header__login" routerLink="/autentificare">Autentificare</a>
+      <a class="pill pill--dark header__register" routerLink="/inregistrare">Cont nou</a>
+    </ng-template>
+  </div>
+</div>

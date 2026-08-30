@@ -1,0 +1,41 @@
+<article class="card">
+  <a class="card__media" [routerLink]="['/salon', salon().slug]" [attr.aria-label]="salon().name">
+    <img [src]="salon().coverImage" [alt]="salon().name" loading="lazy" />
+    <span class="card__category">{{ salon().category }}</span>
+
+    <button
+      *ngIf="showFavorite()"
+      type="button"
+      class="card__favorite"
+      [class.is-on]="salon().isFavorite"
+      (click)="$event.preventDefault(); $event.stopPropagation(); favoriteToggled.emit(salon())"
+      [attr.aria-label]="salon().isFavorite ? 'Scoate de la favorite' : 'Adaugă la favorite'"
+    >
+      <hairit-icon [name]="salon().isFavorite ? 'heart-filled' : 'heart'" />
+    </button>
+  </a>
+
+  <div class="card__body">
+    <div class="card__head">
+      <h3 class="card__name">
+        <a [routerLink]="['/salon', salon().slug]">{{ salon().name }}</a>
+      </h3>
+      <hairit-rating [value]="salon().rating" [count]="salon().reviews" />
+    </div>
+
+    <p class="card__tagline">{{ salon().tagline }}</p>
+
+    <p class="card__place">
+      <hairit-icon name="map-pin" />
+      {{ salon().address }}, {{ salon().city }}
+    </p>
+
+    <div class="card__foot">
+      <span class="card__price">de la <strong>{{ price() }}</strong></span>
+      <span class="card__slots" [class.is-empty]="salon().freeSlots === 0">
+        <hairit-icon name="clock" />
+        {{ salon().freeSlots }} intervale libere
+      </span>
+    </div>
+  </div>
+</article>
