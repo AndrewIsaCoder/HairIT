@@ -7,13 +7,18 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
   template: '<span class="avatar" [class.avatar--accent]="accent()">{{ text() }}</span>',
   styles: [
     `
+      :host {
+        display: block;
+        width: 100%;
+        height: 100%;
+        aspect-ratio: 1;
+      }
+
       .avatar {
         display: grid;
         place-items: center;
         width: 100%;
         height: 100%;
-        min-width: 2.25rem;
-        min-height: 2.25rem;
         border-radius: var(--radius-pill);
         background: var(--surface);
         color: rgba(17, 17, 17, 0.7);

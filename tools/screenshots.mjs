@@ -27,43 +27,41 @@ const CHROME_CANDIDATES = [
 
 function findBrowser() {
   const found = CHROME_CANDIDATES.find((path) => existsSync(path));
-  if (!found) {
-    throw new Error('Nu am gasit Chrome sau Edge. Seteaza variabila CHROME_PATH.');
-  }
+  if (!found) throw new Error('Nu am gasit Chrome sau Edge. Seteaza variabila CHROME_PATH.');
   return found;
 }
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-/** Asteapta disparitia ecranului de incarcare. */
-async function waitForIntro(page) {
-  await page.waitForFunction(() => !document.querySelector('hairit-page-loader'), { timeout: 20000 });
-  await wait(900);
+async function open(page, path) {
+  await page.goto(BASE_URL + path, { waitUntil: 'networkidle2' });
+  await page.waitForFunction(() => !document.querySelector('hairit-page-loader'), { timeout: 20000 }).catch(() => {});
+  await wait(700);
 }
 
-/** Deruleaza toata pagina o data, ca sa se declanseze animatiile de intrare. */
+/** Deruleaza pagina o data, ca sa se declanseze animatiile de intrare. */
 async function primeReveals(page) {
   await page.evaluate(async () => {
     const step = window.innerHeight * 0.7;
     for (let y = 0; y < document.body.scrollHeight; y += step) {
       window.scrollTo(0, y);
-      await new Promise((resolve) => setTimeout(resolve, 130));
+      await new Promise((resolve) => setTimeout(resolve, 120));
     }
     window.scrollTo(0, 0);
   });
-  await wait(700);
+  await wait(600);
 }
 
 /** Deseneaza traseul cursorului peste hero, pentru efectul de liquid reveal. */
 async function paintHero(page) {
   const { width, height } = page.viewport();
-  await page.mouse.move(width * 0.62, height * 0.75);
-  for (let i = 0; i <= 26; i += 1) {
-    const t = i / 26;
-    await page.mouse.move(width * (0.62 + t * 0.3), height * (0.75 - t * 0.45), { steps: 3 });
+  await page.mouse.move(width * 0.68, height * 0.8);
+  for (let i = 0; i <= 24; i += 1) {
+    const t = i / 24;
+    await page.mouse.move(width * (0.68 + t * 0.26), height * (0.8 - t * 0.5), { steps: 3 });
     await wait(16);
   }
-  await wait(260);
+  await wait(250);
 }
 
 async function scrollTo(page, selector, offset = 0) {
@@ -75,13 +73,23 @@ async function scrollTo(page, selector, offset = 0) {
     selector,
     offset
   );
-  await wait(700);
+  await wait(650);
 }
 
 async function shoot(page, name) {
-  const file = join(outDir, name + '.png');
-  await page.screenshot({ path: file });
+  await page.screenshot({ path: join(outDir, name + '.png') });
   console.log('  ✓ ' + name + '.png');
+}
+
+/** Autentificare prin formularul paginii, folosind conturile demo. */
+async function login(page, which) {
+  await open(page, '/autentificare');
+  await page.evaluate((index) => {
+    document.querySelectorAll('.login__demo-buttons button')[index]?.click();
+  }, which === 'owner' ? 1 : 0);
+  await wait(300);
+  await page.evaluate(() => document.querySelector('.login__submit')?.click());
+  await wait(2200);
 }
 
 async function main() {
@@ -97,72 +105,80 @@ async function main() {
   try {
     const page = await browser.newPage();
     await page.setViewport(DESKTOP);
-    await page.goto(BASE_URL, { waitUntil: 'networkidle2' });
 
-    console.log('Generez capturile desktop…');
+    console.log('Capturi desktop…');
+
     // ecranul de incarcare, surprins in timpul animatiei
-    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.goto(BASE_URL, { waitUntil: 'domcontentloaded' });
     await wait(520);
     await shoot(page, '01-loader');
 
-    await waitForIntro(page);
+    await open(page, '/');
     await primeReveals(page);
     await paintHero(page);
-    await shoot(page, '02-hero');
+    await shoot(page, '02-acasa');
 
-    await scrollTo(page, 'hairit-services-section', -40);
-    await shoot(page, '03-servicii');
+    await scrollTo(page, '.featured', -30);
+    await shoot(page, '03-saloane-recomandate');
 
-    await scrollTo(page, 'hairit-booking-section', 120);
-    await shoot(page, '04-programari');
+    await open(page, '/saloane');
+    await primeReveals(page);
+    await shoot(page, '04-cautare');
 
-    // selecteaza primul interval liber si arata detaliile
+    await open(page, '/salon/hairit-studio');
+    await primeReveals(page);
+    await shoot(page, '05-salon');
+
+    await scrollTo(page, '#rezervare', -30);
+    await shoot(page, '06-rezervare');
+
+    // autentificare ca și client
+    await login(page, 'client');
+    await shoot(page, '07-contul-meu');
+
     await page.evaluate(() => {
-      const card = [...document.querySelectorAll('.term--available')][2];
-      card?.click();
+      const tabs = [...document.querySelectorAll('.account__tabs button')];
+      tabs.find((b) => b.textContent.includes('Notificări'))?.click();
     });
+    await wait(900);
+    await shoot(page, '08-notificari');
+
+    // fluxul de rezervare cu cont
+    await open(page, '/salon/nova-nails');
+    await scrollTo(page, '#rezervare', -30);
+    await page.evaluate(() => document.querySelector('.slot--available')?.click());
     await wait(600);
-    await scrollTo(page, 'hairit-booking-section', 320);
-    await shoot(page, '05-detalii-rezervare');
+    await shoot(page, '09-rezumat');
 
-    await scrollTo(page, 'hairit-studio-section', 40);
-    await shoot(page, '06-salon');
+    await page.evaluate(() => document.querySelector('.summary__form button[type=submit]')?.click());
+    await wait(2200);
+    await shoot(page, '10-confirmare');
 
-    await scrollTo(page, 'hairit-team-section', 40);
-    await shoot(page, '07-echipa');
+    // panoul proprietarului
+    await login(page, 'owner');
+    await open(page, '/salonul-meu');
+    await wait(1200);
+    await shoot(page, '11-panou-salon');
 
-    await scrollTo(page, 'hairit-stats-section', -40);
-    await shoot(page, '08-cifre');
+    await scrollTo(page, '.agenda', -140);
+    await shoot(page, '12-agenda');
 
-    await scrollTo(page, 'hairit-site-footer', 0);
-    await shoot(page, '09-footer');
+    await open(page, '/autentificare');
+    await shoot(page, '13-autentificare');
 
-    // meniul principal
-    await page.evaluate(() => document.querySelector('.header__menu')?.click());
-    await wait(900);
-    await shoot(page, '10-meniu');
-    await page.keyboard.press('Escape');
-    await wait(500);
-
-    // formularul de cerere
-    await page.evaluate(() => {
-      const button = [...document.querySelectorAll('button')].find((b) =>
-        b.textContent?.includes('Cere o programare')
-      );
-      button?.click();
-    });
-    await wait(900);
-    await shoot(page, '11-formular');
-    await page.keyboard.press('Escape');
-    await wait(400);
-
-    console.log('Generez captura mobil…');
-    const mobile = await browser.newPage();
+    console.log('Captura mobil…');
+    const guest = await browser.createBrowserContext();
+    const mobile = await guest.newPage();
     await mobile.setViewport(MOBILE);
-    await mobile.goto(BASE_URL, { waitUntil: 'networkidle2' });
-    await waitForIntro(mobile);
+    await open(mobile, '/');
     await primeReveals(mobile);
-    await shoot(mobile, '12-mobil');
+    await mobile.evaluate(() => window.scrollTo(0, 0));
+    await wait(500);
+    await shoot(mobile, '14-mobil');
+
+    await open(mobile, '/saloane');
+    await wait(600);
+    await shoot(mobile, '15-mobil-cautare');
 
     console.log('Gata. Fisierele sunt in docs/screenshots.');
   } finally {

@@ -1,31 +1,32 @@
-# HairIT — aplicație full stack de programări pentru salon
+# HairIT — platformă de programări la saloane
 
 ![Angular](https://img.shields.io/badge/Angular-21-DD0031?logo=angular&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-24-5FA04E?logo=nodedotjs&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-4-000000?logo=express&logoColor=white)
-![SQLite](https://img.shields.io/badge/SQLite-node:sqlite-003B57?logo=sqlite&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-Turso-003B57?logo=sqlite&logoColor=white)
 ![Fără dependențe UI](https://img.shields.io/badge/CSS-scris%20de%20m%C3%A2n%C4%83-b15f2c)
 
-Aplicație web pentru rezervarea programărilor într-un salon de coafură și îngrijire.
-Frontend-ul este scris în **Angular 21**, iar backend-ul este un **API REST Express + SQLite**.
-Interfața folosește un sistem de design propriu: paletă caldă, tipografia *Onest*, grid adaptiv în `rem`,
-ecran de intrare animat și un efect de dezvăluire a imaginii sub cursor în hero.
+Aplicație full stack în care clienții găsesc saloane, frizerii și studiouri de înfrumusețare,
+văd intervalele libere în timp real și rezervă din contul lor, iar proprietarii de saloane își
+administrează agenda, serviciile și rezervările primite.
 
-![Pagina principală HairIT](docs/screenshots/02-hero.png)
+Frontend: **Angular 21** cu componente standalone, signals și rutare cu încărcare lazy.
+Backend: **API REST Express** peste **SQLite**, cu autentificare pe sesiune și notificări în aplicație.
+Toată interfața este scrisă de mână în CSS, fără framework de UI.
 
-> **Pe scurt:** calendar pe 12 zile → alegi un interval liber (verde) → completezi formularul →
-> statusul trece în `booked` și lista, calendarul și statisticile se actualizează instant.
-> Build de producție: **80,8 kB** transferați, fără niciun framework CSS.
+![Pagina principală HairIT](docs/screenshots/02-acasa.png)
 
 ---
 
 ## Cuprins
 
 - [Funcționalități](#funcționalități)
+- [Conturi demo](#conturi-demo)
 - [Capturi de ecran](#capturi-de-ecran)
 - [Tehnologii](#tehnologii)
 - [Structura proiectului](#structura-proiectului)
+- [Modelul de date](#modelul-de-date)
 - [Pornire rapidă](#pornire-rapidă)
 - [API](#api)
 - [Sistemul de design](#sistemul-de-design)
@@ -37,50 +38,78 @@ ecran de intrare animat și un efect de dezvăluire a imaginii sub cursor în he
 
 ## Funcționalități
 
-**Programări**
+### Pentru clienți
 
-- calendar orizontal cu 12 zile, fiecare zi arătând câte intervale sunt libere;
-- lista intervalelor pentru ziua selectată, generată dinamic cu `*ngFor`;
-- intervalele libere sunt verzi, cele ocupate sunt roșii (`[ngClass]` pe baza statusului);
-- filtre **Toate / Libere / Ocupate** și legendă de culori;
-- la clic pe un interval se afișează panoul de detalii (client, telefon, dată și oră, serviciu, stilist);
-- când nu este selectat nimic, panoul afișează mesajul *„Selectează o programare pentru a vedea detaliile”*;
-- intervalele libere pot fi rezervate printr-un formular reactiv cu validări;
-- după rezervare statusul trece din `available` în `booked`, iar lista, calendarul și statisticile se actualizează;
-- pentru un interval ocupat butonul de rezervare nu este afișat, ci un mesaj de indisponibilitate și opțiunea de eliberare.
+- **Căutare** după oraș, categorie de salon sau text liber (nume de salon ori de serviciu);
+- **Pagina salonului** cu servicii, prețuri, durate, echipă, program de lucru și recenzii;
+- **Rezervare în trei pași** — alegi serviciul, specialistul (sau lași salonul să aleagă), apoi ziua și ora;
+- intervalele libere sunt **verzi**, cele ocupate **roșii**, iar calendarul arată câte locuri rămân în fiecare zi;
+- **rezumat lipit** pe lateral, cu serviciul, specialistul, data, ora și totalul de plată;
+- **contul meu**: programări viitoare, istoric, anulare, saloane favorite și date personale;
+- **notificări în aplicație** la confirmare, anulare și reprogramare, cu clopoțel și contor de necitite;
+- **recenzii** cu punctaj de la 1 la 5, disponibile doar după o programare la salonul respectiv.
 
-**Prezentare**
+### Pentru saloane
 
-- ecran de intrare care numără `000 → 100` și eliberează pagina;
-- hero cu imagine full-bleed și efect *liquid reveal*: a doua fotografie este pictată pe traseul cursorului;
-- listă de servicii citită din API, cu durată, preț și categorie;
-- secțiune editorială despre salon, echipa în carduri întunecate, panou cu cifrele salonului;
-- meniu pe tot ecranul, formular modal de contact, footer cu date de contact;
-- scroll fluid (Lenis), animații de intrare la derulare și layout responsive.
+- **panou propriu** cu cifrele salonului: rezervări viitoare, intervale libere, grad de ocupare, încasări estimate;
+- **agenda zilei** pe fiecare specialist, cu datele de contact ale clientului și mențiunile lăsate de acesta;
+- **anularea unei rezervări** din partea salonului, care trimite automat notificare clientului;
+- **gestionarea serviciilor**: adăugare, listare și ștergere, cu durată, preț și categorie;
+- un cont poate administra **mai multe saloane**, comutabile din același panou.
+
+### Platformă
+
+- autentificare pe email și parolă, cu parole hash-uite (scrypt) și sesiuni în cookie `httpOnly`;
+- roluri separate pentru client și proprietar, cu gărzi de rută în Angular și verificări pe server;
+- ecran de intrare animat, efect *liquid reveal* în hero, scroll fluid și animații la derulare;
+- interfață responsive, navigare la tastatură și respectarea `prefers-reduced-motion`.
+
+---
+
+## Conturi demo
+
+Baza de date este populată automat la prima pornire. Toate conturile au parola `parola123`.
+
+| Rol | Email | Ce poate face |
+| --- | --- | --- |
+| Client | `ana@exemplu.ro` | rezervă, anulează, are favorite, recenzii și notificări |
+| Client | `maria@exemplu.ro` | al doilea client, cu alt istoric |
+| Proprietar | `owner@hairit.ro` | administrează **HairIT Studio** și **Barber Bros** |
+| Proprietar | `contact@urbancut.ro` | administrează **Urban Cut** |
+
+Pagina de autentificare are butoane care completează singure conturile demo.
 
 ---
 
 ## Capturi de ecran
 
-| Ecran de intrare | Servicii |
+| Ecran de intrare | Saloane recomandate |
 | --- | --- |
-| ![Ecranul de încărcare](docs/screenshots/01-loader.png) | ![Lista de servicii](docs/screenshots/03-servicii.png) |
+| ![Ecranul de încărcare](docs/screenshots/01-loader.png) | ![Saloane recomandate](docs/screenshots/03-saloane-recomandate.png) |
 
-| Lista de programări | Detalii și rezervare |
+| Căutare cu filtre | Pagina salonului |
 | --- | --- |
-| ![Calendar și intervale](docs/screenshots/04-programari.png) | ![Panoul de detalii](docs/screenshots/05-detalii-rezervare.png) |
+| ![Rezultatele căutării](docs/screenshots/04-cautare.png) | ![Pagina unui salon](docs/screenshots/05-salon.png) |
 
-| Despre salon | Echipa |
+| Flux de rezervare | Rezumatul programării |
 | --- | --- |
-| ![Secțiunea editorială](docs/screenshots/06-salon.png) | ![Cardurile echipei](docs/screenshots/07-echipa.png) |
+| ![Alegerea serviciului și a specialistului](docs/screenshots/06-rezervare.png) | ![Rezumat înainte de confirmare](docs/screenshots/09-rezumat.png) |
 
-| Cifrele salonului | Footer |
+| Confirmare | Contul meu |
 | --- | --- |
-| ![Statistici animate](docs/screenshots/08-cifre.png) | ![Footer](docs/screenshots/09-footer.png) |
+| ![Programare confirmată](docs/screenshots/10-confirmare.png) | ![Programările mele](docs/screenshots/07-contul-meu.png) |
 
-| Meniu | Formular de contact | Mobil |
-| --- | --- | --- |
-| ![Meniul principal](docs/screenshots/10-meniu.png) | ![Formularul modal](docs/screenshots/11-formular.png) | ![Varianta mobilă](docs/screenshots/12-mobil.png) |
+| Notificări | Autentificare |
+| --- | --- |
+| ![Centrul de notificări](docs/screenshots/08-notificari.png) | ![Pagina de autentificare](docs/screenshots/13-autentificare.png) |
+
+| Panoul salonului | Agenda zilei |
+| --- | --- |
+| ![Cifrele salonului](docs/screenshots/11-panou-salon.png) | ![Agenda pe specialiști](docs/screenshots/12-agenda.png) |
+
+| Mobil — acasă | Mobil — căutare |
+| --- | --- |
+| ![Varianta mobilă](docs/screenshots/14-mobil.png) | ![Căutare pe mobil](docs/screenshots/15-mobil-cautare.png) |
 
 Capturile se regenerează cu `npm run screenshots` (necesită Chrome sau Edge instalat,
 plus backend-ul și frontend-ul pornite).
@@ -91,8 +120,9 @@ plus backend-ul și frontend-ul pornite).
 
 | Zonă | Tehnologii |
 | --- | --- |
-| Frontend | Angular 21 (componente standalone, signals, zoneless), TypeScript 5.9, CSS pur, Lenis |
+| Frontend | Angular 21 (standalone, signals, zoneless), Router cu lazy loading, Reactive Forms, TypeScript 5.9, CSS pur, Lenis |
 | Backend | Node.js 24, Express 4, `node:sqlite` local și `@libsql/client` (Turso) în producție |
+| Securitate | scrypt pentru parole, sesiuni opace în baza de date, cookie `httpOnly` + `SameSite=Lax` |
 | Găzduire | Vercel — frontend static + API ca funcție serverless |
 | Unelte | Angular CLI, Puppeteer (capturi de ecran), PowerShell / zip (arhiva de predare) |
 
@@ -104,51 +134,64 @@ Nu există dependențe de UI kit-uri sau framework-uri CSS: tot sistemul de desi
 
 ```
 HairIT/
-├── backend/                    API REST + baza de date
+├── backend/                        API REST + baza de date
 │   └── src/
-│       ├── lib/db.js           conexiunea SQLite și schema
-│       ├── lib/repository.js   interogările pregătite
-│       ├── routes/api.js       rutele REST și validările
-│       ├── seed.js             datele de test (servicii, stiliști, intervale)
-│       ├── app.js              configurarea Express
-│       └── server.js           punctul de pornire
-├── frontend/                   aplicația Angular
-│   ├── public/images/          fotografiile folosite în pagină
+│       ├── lib/
+│       │   ├── db.js               driverele SQLite (local si Turso)
+│       │   ├── schema.js           definitia tabelelor
+│       │   ├── auth.js             parole, sesiuni, cookie-uri, middleware
+│       │   ├── route.js            validare si tratarea erorilor async
+│       │   └── repositories/       users, salons, appointments, reviews, notifications
+│       ├── routes/                 auth, salons, appointments, me, owner
+│       ├── seed.js                 7 saloane, 25 servicii, conturi demo
+│       ├── app.js                  configurarea Express
+│       └── server.js               punctul de pornire local
+├── frontend/                       aplicatia Angular
+│   ├── public/images/              fotografiile saloanelor
 │   └── src/app/
 │       ├── core/
-│       │   ├── models/         interfețele TypeScript
-│       │   ├── services/       AppointmentApi, BookingStore, UiState, Clock, SmoothScroll
-│       │   └── utils/          formatarea datelor și a prețurilor
-│       ├── shared/             pictograme SVG, directiva de reveal, efectul liquid
-│       ├── components/
-│       │   ├── page-loader/    ecranul de intrare
-│       │   ├── site-header/    bara de navigare
-│       │   ├── nav-menu/       meniul pe tot ecranul
-│       │   ├── hero-section/   secțiunea principală
-│       │   ├── services-section/
-│       │   ├── booking-section/ containerul de programări
-│       │   ├── term-card/      un interval din listă
-│       │   ├── term-details/   detaliile + formularul de rezervare
-│       │   ├── studio-section/
-│       │   ├── team-section/
-│       │   ├── stats-section/
-│       │   ├── site-footer/
-│       │   └── request-modal/  formularul de contact
-│       ├── app.ts / app.html   componenta rădăcină
-│       └── styles.css          sistemul de design global
-├── api/index.js                punctul de intrare pentru funcția serverless de pe Vercel
-├── vercel.json                 comenzile de build și rutarea /api către funcție
-├── docs/screenshots/           capturile din acest README
-└── tools/                      generarea capturilor și arhiva de predare
+│       │   ├── models/             interfetele TypeScript
+│       │   ├── guards/             authGuard si ownerGuard
+│       │   ├── services/           Api, AuthStore, SalonStore, AccountStore, OwnerStore
+│       │   └── utils/              formatarea datelor si a preturilor
+│       ├── shared/                 icon, rating, avatar, salon-card, empty-state,
+│       │                           auth-shell, reveal, liquid-reveal
+│       ├── layout/                 page-loader, site-header, nav-menu, site-footer
+│       ├── pages/                  home, salons, salon, login, register,
+│       │                           account, owner, not-found
+│       ├── app.routes.ts           rutele si garzile
+│       └── styles.css              sistemul de design global
+├── api/index.js                    functia serverless de pe Vercel
+├── vercel.json                     build-ul si rutarea /api
+├── docs/screenshots/               capturile din acest README
+└── tools/                          generarea capturilor si arhiva de predare
 ```
 
-Fiecare componentă are fișiere separate pentru clasă (`.ts`), șablon (`.html`) și stiluri (`.css`).
+---
+
+## Modelul de date
+
+| Tabel | Rol |
+| --- | --- |
+| `users` | conturi de client și de proprietar, cu parola hash-uită |
+| `sessions` | sesiuni active, identificate prin hash-ul token-ului din cookie |
+| `salons` | saloanele din platformă, fiecare legat opțional de un proprietar |
+| `salon_hours` | programul de lucru pe zile ale săptămânii |
+| `staff` | specialiștii fiecărui salon |
+| `services` | serviciile, cu durată, preț și categorie |
+| `appointments` | intervalele din agendă, libere sau rezervate |
+| `reviews` | câte o recenzie de utilizator per salon |
+| `favorites` | saloanele salvate de utilizatori |
+| `notifications` | mesajele afișate în clopoțelul din header |
+
+Intervalele sunt generate în avans pentru fiecare specialist și zi lucrătoare, iar rezervarea doar
+schimbă statusul din `available` în `booked` și atașează utilizatorul.
 
 ---
 
 ## Pornire rapidă
 
-Ai nevoie de **Node.js 22.12+ sau 24+** (aplicația a fost dezvoltată pe Node 24).
+Ai nevoie de **Node.js 22.12+ sau 24+**.
 
 ```bash
 npm run setup
@@ -169,61 +212,74 @@ npm run web
 - interfața: <http://localhost:4200>
 - API: <http://localhost:3100/api>
 
-Baza de date SQLite se creează și se populează automat la prima pornire a serverului,
-în `backend/data/hairit.db`. Nu ai nevoie de niciun cont sau variabilă de mediu pentru dezvoltare.
-Pentru a regenera datele de test:
+Baza de date SQLite se creează și se populează automat la prima pornire, în `backend/data/hairit.db`.
+Nu ai nevoie de niciun cont sau variabilă de mediu pentru dezvoltare. Pentru a regenera datele:
 
 ```bash
 npm run seed
 ```
 
-Serverul de development Angular trimite cererile `/api` către backend prin `frontend/proxy.conf.json`,
-deci nu ai nevoie de configurări suplimentare.
-
 ---
 
 ## API
 
-Toate rutele sunt sub prefixul `/api`.
+Toate rutele sunt sub prefixul `/api`. Rutele marcate cu 🔒 cer sesiune activă.
+
+### Autentificare
 
 | Metodă | Rută | Descriere |
 | --- | --- | --- |
-| `GET` | `/health` | verificarea stării serverului |
-| `GET` | `/services` | lista serviciilor |
-| `GET` | `/stylists` | lista stiliștilor |
-| `GET` | `/stats` | totaluri, grad de ocupare, încasări estimate |
-| `GET` | `/appointments` | programările; filtre opționale `date`, `status`, `serviceId` |
-| `GET` | `/appointments/days` | zilele disponibile, cu numărul de intervale libere și ocupate |
+| `POST` | `/auth/register` | cont nou (`fullName`, `email`, `phone`, `password`, `role`) |
+| `POST` | `/auth/login` | autentificare, setează cookie-ul de sesiune |
+| `POST` | `/auth/logout` | închide sesiunea |
+| `GET` | `/auth/me` | utilizatorul curent |
+| `PATCH` | `/auth/me` 🔒 | actualizează numele și telefonul |
+| `POST` | `/auth/me/password` 🔒 | schimbă parola și invalidează sesiunile |
+
+### Catalog
+
+| Metodă | Rută | Descriere |
+| --- | --- | --- |
+| `GET` | `/salons` | listă cu filtre `city`, `category`, `q` |
+| `GET` | `/salons/filters` | orașe, categorii și cifrele platformei |
+| `GET` | `/salons/:slug` | salonul complet: servicii, echipă, program, recenzii |
+| `GET` | `/salons/:slug/days` | zilele cu intervale, filtrabile pe serviciu și specialist |
+| `GET` | `/salons/:slug/slots` | intervalele unei zile |
+| `GET` | `/salons/:slug/reviews` | recenziile salonului |
+
+### Programări
+
+| Metodă | Rută | Descriere |
+| --- | --- | --- |
 | `GET` | `/appointments/:id` | o programare |
-| `POST` | `/appointments` | adaugă un interval nou (`date`, `time`, `serviceId`, `stylistId`) |
-| `POST` | `/appointments/:id/reserve` | rezervă intervalul (`clientName`, `phone`, opțional `email`, `notes`) |
-| `POST` | `/appointments/:id/cancel` | eliberează intervalul |
+| `POST` | `/appointments/:id/reserve` 🔒 | rezervă intervalul și notifică utilizatorul |
+| `POST` | `/appointments/:id/cancel` 🔒 | anulează (clientul propriu sau proprietarul salonului) |
+| `POST` | `/appointments/:id/reschedule` 🔒 | mută rezervarea pe alt interval liber |
 
-Exemplu de răspuns pentru o programare:
+### Contul meu 🔒
 
-```json
-{
-  "id": 12,
-  "date": "2026-08-31",
-  "time": "10:30",
-  "status": "booked",
-  "clientName": "Ana Petrescu",
-  "phone": "+40760123456",
-  "email": "ana@example.com",
-  "notes": "",
-  "serviceId": 1,
-  "service": "Tuns & Styling",
-  "category": "Păr",
-  "durationMin": 60,
-  "price": 150,
-  "stylistId": 1,
-  "stylist": "Ioana Marin",
-  "stylistInitials": "IM"
-}
-```
+| Metodă | Rută | Descriere |
+| --- | --- | --- |
+| `GET` | `/me/appointments` | programări viitoare și istoric |
+| `GET` | `/me/favorites` | saloanele favorite |
+| `POST` / `DELETE` | `/me/favorites/:salonId` | adaugă sau scoate de la favorite |
+| `GET` | `/me/notifications` | notificările și numărul de necitite |
+| `POST` | `/me/notifications/:id/read` | marchează una ca citită |
+| `POST` | `/me/notifications/read-all` | marchează toate ca citite |
+| `PUT` / `DELETE` | `/me/reviews/:slug` | salvează sau șterge recenzia proprie |
 
-Coduri de eroare folosite: `400` parametri invalizi, `404` programare inexistentă,
-`409` interval deja rezervat sau deja liber, `422` date de formular invalide.
+### Panoul salonului 🔒 (rol `owner`)
+
+| Metodă | Rută | Descriere |
+| --- | --- | --- |
+| `GET` | `/owner/salons` | saloanele administrate |
+| `GET` | `/owner/salons/:id` | detalii, servicii, echipă și statistici |
+| `GET` | `/owner/salons/:id/agenda` | agenda unei zile, plus zilele disponibile |
+| `POST` | `/owner/salons/:id/services` | adaugă un serviciu |
+| `PATCH` / `DELETE` | `/owner/services/:id` | modifică sau șterge un serviciu |
+
+Coduri de eroare: `400` parametri invalizi, `401` neautentificat, `403` fără drepturi,
+`404` inexistent, `409` conflict (interval deja rezervat, email deja folosit), `422` date de formular invalide.
 
 ---
 
@@ -248,19 +304,22 @@ Coduri de eroare folosite: `400` parametri invalizi, `404` programare inexistent
 
 ## Cerințele temei și unde sunt implementate
 
+Aplicația a pornit de la tema „aplicație de programări pentru salon” și a fost extinsă într-o
+platformă cu conturi. Cerințele inițiale rămân acoperite, în pagina unui salon:
+
 | Cerință | Implementare |
 | --- | --- |
-| Componenta principală a aplicației | `frontend/src/app/app.ts` + secțiunile din `components/` |
-| Listă de programări cu nume, telefon, dată, oră, serviciu, status | modelul `Appointment` din `core/models/appointment.ts`, datele vin din API |
-| Afișarea tuturor programărilor cu `*ngFor` | `components/booking-section/booking-section.html` |
-| `ngClass` pentru diferențierea vizuală (verde / roșu) | `components/term-card/term-card.html` + `term-card.css` |
-| Clic pe o programare liberă → se poate rezerva | `BookingStore.selectTerm()` și formularul din `term-details` |
-| Clic pe o programare ocupată → mesaj de indisponibilitate | `BookingStore.selectTerm()` setează `notice`, afișat în `term-details.html` |
-| Event binding `(click)="selectTerm(term)"` | `booking-section.html`, prin `(choose)` emis de `TermCard` |
-| `selectedTerm` inițial `null` și afișarea detaliilor | `BookingStore.selectedTerm` este `signal<Appointment \| null>(null)` |
-| `*ngIf` pentru detalii și pentru mesajul implicit | `components/term-details/term-details.html` |
-| Buton „Reserve” care schimbă statusul în `booked` | `TermDetails.submit()` → `BookingStore.reserve()` → `POST /appointments/:id/reserve` |
-| Butonul nu apare pentru programările rezervate | `*ngIf="selected.status === 'available'"` în `term-details.html` |
+| Componenta principală a aplicației | `frontend/src/app/app.ts` plus paginile din `pages/` |
+| Listă de programări cu nume, telefon, dată, oră, serviciu, status | interfața `Appointment` din `core/models/index.ts` |
+| Afișarea programărilor cu `*ngFor` | `pages/salon/salon-page.html`, lista `.slots` |
+| `ngClass` pentru diferențierea vizuală (verde / roșu) | `[ngClass]` pe `.slot`, stilurile din `salon-page.css` |
+| Clic pe un interval liber → se poate rezerva | `SalonPage.chooseSlot()` și formularul din rezumat |
+| Clic pe un interval ocupat → mesaj de indisponibilitate | `*ngIf` pe `.form__notice` în rezumatul programării |
+| Event binding `(click)` | `(click)="chooseSlot(slot)"` în lista de intervale |
+| Programare selectată, inițial neselectată | `selectedSlot = signal<Appointment \| null>(null)` |
+| `*ngIf` pentru detalii și mesajul implicit | rezumatul din `salon-page.html` (`.summary__hint` când nu e nimic ales) |
+| Buton de rezervare care schimbă statusul în `booked` | `SalonPage.book()` → `POST /appointments/:id/reserve` |
+| Butonul nu apare pentru intervalele rezervate | `*ngIf="canBook() && auth.isLoggedIn()"` pe formular |
 | Stilizarea aplicației | `frontend/src/styles.css` și fișierele `.css` ale fiecărei componente |
 
 ---
@@ -297,12 +356,12 @@ Interogările SQL sunt identice în ambele cazuri.
 
 ### Pașii de publicare
 
-1. **Importă proiectul în Vercel** ([vercel.com/new](https://vercel.com/new)). Nu modifica setările de
-   build — sunt luate din `vercel.json`.
+1. **Importă proiectul în Vercel** ([vercel.com/new](https://vercel.com/new)). La *Root Directory*
+   alege rădăcina repo-ului, nu `frontend/`, iar *Framework Preset* rămâne `Other`.
+   Restul setărilor sunt luate din `vercel.json`.
 
 2. **Adaugă baza de date din Marketplace:** în proiect → *Storage* → *Turso Cloud* → creează baza și
-   conecteaz-o la proiect. Integrarea setează automat `TURSO_DATABASE_URL` și `TURSO_AUTH_TOKEN`
-   în variabilele de mediu, pentru toate mediile. Nu trebuie să cauți sau să copiezi tu token-ul.
+   conecteaz-o la proiect. Integrarea setează automat `TURSO_DATABASE_URL` și `TURSO_AUTH_TOKEN`.
 
 3. **Adu variabilele local**, ca să poți popula baza:
 
@@ -317,17 +376,7 @@ Interogările SQL sunt identice în ambele cazuri.
    npm run seed:turso
    ```
 
-5. **Redeploy** din panoul Vercel (*Deployments* → ultimul deploy → *Redeploy*), ca funcția să
-   pornească având variabilele setate. Frontendul apelează `/api` pe aceeași origine, deci nu există
-   probleme de CORS.
-
-Pentru a reface datele demo pe baza publicată, rulează din nou `npm run seed:turso`.
-
-> Dacă preferi să creezi baza direct la Turso, în afara Vercel, ai nevoie de CLI-ul lor
-> (`turso db create hairit`, `turso db show hairit --url`, `turso db tokens create hairit`).
-> Atenție: pe Windows CLI-ul rulează doar prin WSL, de aceea traseul recomandat mai sus este
-> integrarea din Vercel. Variabilele obținute astfel se pun manual în `.env` și în
-> *Settings → Environment Variables*.
+5. **Redeploy** din panoul Vercel, ca funcția să pornească având variabilele setate.
 
 ---
 
@@ -337,7 +386,7 @@ Pentru a reface datele demo pe baza publicată, rulează din nou `npm run seed:t
 npm run livrabil
 ```
 
-Arhiva rezultată (~4 MB) conține codul sursă fără `node_modules`, `dist` sau baza de date locală.
+Arhiva conține codul sursă fără `node_modules`, `dist` sau baza de date locală.
 După dezarhivare este suficient `npm run setup`, apoi `npm run api` și `npm run web`.
 
 ---
